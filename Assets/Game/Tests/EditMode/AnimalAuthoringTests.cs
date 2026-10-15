@@ -20,6 +20,14 @@ namespace ZooWorld.Tests.EditMode
         }
 
         [Test]
+        public void GeneratedAnimal_ComposesReusableMovement()
+        {
+            var source = new AnimalScaffoldingTemplates().Animal("Bear");
+            Assert.That(source, Does.Contain("new LinearMovement(body, config.Speed)"));
+            Assert.That(source, Does.Not.Contain("BearMovement"));
+        }
+
+        [Test]
         public void Snake_IsFrogShapeScaledByOnePointTwo()
         {
             var frogScale = LoadScale(FrogPrefabPath);

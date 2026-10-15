@@ -20,8 +20,17 @@ namespace ZooWorld.Game.Features.Animals.Snake
 
         protected override IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body)
         {
-            var config = definition as SnakeConfigDto;
-            return new SnakeMovement(body, config ?? throw WrongConfig(definition));
+            return CreateLinearMovement(body, RequireConfig(definition));
+        }
+
+        private IAnimalMovement CreateLinearMovement(Rigidbody body, SnakeConfigDto config)
+        {
+            return new LinearMovement(body, config.Speed);
+        }
+
+        private SnakeConfigDto RequireConfig(AnimalConfigDto definition)
+        {
+            return definition as SnakeConfigDto ?? throw WrongConfig(definition);
         }
 
         private Exception WrongConfig(AnimalConfigDto definition)

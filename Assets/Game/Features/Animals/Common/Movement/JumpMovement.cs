@@ -1,10 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
-using ZooWorld.Game.Features.Animals.Common.Movement;
 
-namespace ZooWorld.Game.Features.Animals.Frog
+namespace ZooWorld.Game.Features.Animals.Common.Movement
 {
-    public sealed class FrogMovement : IAnimalMovement
+    public sealed class JumpMovement : IAnimalMovement
     {
         private readonly Rigidbody _body;
         private readonly float _interval;
@@ -14,12 +13,12 @@ namespace ZooWorld.Game.Features.Animals.Frog
         private float _timeUntilJump;
         private Tween _jumpTween;
 
-        public FrogMovement(Rigidbody body, FrogConfigDto config)
+        public JumpMovement(Rigidbody body, float interval, float distance, float duration)
         {
             _body = body;
-            _interval = config.JumpInterval;
-            _distance = config.JumpDistance;
-            _duration = config.JumpDuration;
+            _interval = interval;
+            _distance = distance;
+            _duration = duration;
             ResetInitialState();
         }
 

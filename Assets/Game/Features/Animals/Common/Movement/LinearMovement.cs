@@ -1,18 +1,17 @@
 using UnityEngine;
-using ZooWorld.Game.Features.Animals.Common.Movement;
 
-namespace ZooWorld.Game.Features.Animals.Snake
+namespace ZooWorld.Game.Features.Animals.Common.Movement
 {
-    public sealed class SnakeMovement : IAnimalMovement
+    public sealed class LinearMovement : IAnimalMovement
     {
         private readonly Rigidbody _body;
         private readonly float _speed;
         private Vector3 _direction;
 
-        public SnakeMovement(Rigidbody body, SnakeConfigDto config)
+        public LinearMovement(Rigidbody body, float speed)
         {
             _body = body;
-            _speed = config.Speed;
+            _speed = speed;
             _direction = RandomDirection();
         }
 

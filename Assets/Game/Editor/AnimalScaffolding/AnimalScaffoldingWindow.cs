@@ -81,7 +81,6 @@ namespace ZooWorld.Editor.AnimalScaffolding
             var scripts = featureFolder + "/Scripts";
             Write(scripts, _animalName + "ConfigDto.cs", _templates.ConfigDto(_animalName));
             Write(scripts, _animalName + "Definition.cs", _templates.Definition(_animalName));
-            Write(scripts, _animalName + "Movement.cs", _templates.Movement(_animalName));
             Write(scripts, _animalName + ".cs", _templates.Animal(_animalName));
         }
 

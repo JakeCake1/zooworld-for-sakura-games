@@ -10,8 +10,17 @@ namespace ZooWorld.Game.Features.Animals.Frog
     {
         protected override IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body)
         {
-            var config = definition as FrogConfigDto;
-            return new FrogMovement(body, config ?? throw WrongConfig(definition));
+            return CreateJumpMovement(body, RequireConfig(definition));
+        }
+
+        private IAnimalMovement CreateJumpMovement(Rigidbody body, FrogConfigDto config)
+        {
+            return new JumpMovement(body, config.JumpInterval, config.JumpDistance, config.JumpDuration);
+        }
+
+        private FrogConfigDto RequireConfig(AnimalConfigDto definition)
+        {
+            return definition as FrogConfigDto ?? throw WrongConfig(definition);
         }
 
         private Exception WrongConfig(AnimalConfigDto definition)
