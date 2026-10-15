@@ -17,6 +17,7 @@ namespace ZooWorld.Tests.PlayMode
             yield return null;
             Assert.That(Object.FindFirstObjectByType<ZooWorldLifetimeScope>(), Is.Not.Null);
             AssertGroundIsBrown();
+            AssertWorldHasDepth();
             yield return WaitForSpawn();
             Assert.That(Object.FindFirstObjectByType<Animal>(), Is.Not.Null);
         }
@@ -28,6 +29,27 @@ namespace ZooWorld.Tests.PlayMode
             var color = ground.GetComponent<Renderer>().sharedMaterial.color;
             Assert.That(color.r, Is.GreaterThan(color.g));
             Assert.That(color.g, Is.GreaterThan(color.b));
+        }
+
+        private void AssertWorldHasDepth()
+        {
+            AssertCameraIsTilted();
+            AssertLightCastsShadows();
+        }
+
+        private void AssertCameraIsTilted()
+        {
+            var camera = Camera.main;
+            Assert.That(camera, Is.Not.Null);
+            Assert.That(camera.orthographic, Is.True);
+            Assert.That(camera.transform.eulerAngles.x, Is.InRange(60f, 85f));
+        }
+
+        private void AssertLightCastsShadows()
+        {
+            var light = Object.FindFirstObjectByType<Light>();
+            Assert.That(light, Is.Not.Null);
+            Assert.That(light.shadows, Is.Not.EqualTo(LightShadows.None));
         }
 
         private IEnumerator WaitForSpawn()

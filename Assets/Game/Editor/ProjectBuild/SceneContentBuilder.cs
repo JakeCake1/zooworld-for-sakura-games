@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using ZooWorld.Game.Features.Animals.Common.Data;
@@ -47,8 +48,8 @@ namespace ZooWorld.Editor.ProjectBuild
 
         private void ConfigureCameraTransform(Transform cameraTransform)
         {
-            cameraTransform.position = new Vector3(0f, 15f, 0f);
-            cameraTransform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            cameraTransform.position = new Vector3(0f, 14f, -5.7f);
+            cameraTransform.rotation = Quaternion.Euler(68f, 0f, 0f);
         }
 
         private void ConfigureCamera(Camera camera)
@@ -70,6 +71,8 @@ namespace ZooWorld.Editor.ProjectBuild
         {
             light.type = LightType.Directional;
             light.intensity = 1.2f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.8f;
         }
 
         private void CreateGround(Material material)
@@ -78,7 +81,15 @@ namespace ZooWorld.Editor.ProjectBuild
             ground.name = "Ground";
             ground.transform.position = new Vector3(0f, -0.35f, 0f);
             ground.transform.localScale = new Vector3(18f, 0.5f, 11f);
-            ground.GetComponent<Renderer>().sharedMaterial = material;
+            ConfigureGroundRenderer(ground.GetComponent<Renderer>(), material);
+            ground.isStatic = true;
+        }
+
+        private void ConfigureGroundRenderer(Renderer renderer, Material material)
+        {
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = true;
         }
 
         private void CreateSpawner()
