@@ -1,4 +1,6 @@
-using System.Collections;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 using ZooWorld.Game.Features.Animals.Common.Data;
@@ -20,18 +22,25 @@ namespace ZooWorld.Game.Features.Spawning
             _catalog = catalog;
         }
 
-        private IEnumerator Start()
+        private void Start()
         {
-            while (enabled)
+            RunAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        private async UniTask RunAsync(CancellationToken cancellationToken)
+        {
+            await _catalog.InitializeAsync(cancellationToken);
+            while (!cancellationToken.IsCancellationRequested)
             {
-                yield return WaitForNextSpawn();
+                await WaitForNextSpawn(cancellationToken);
                 SpawnAnimal();
             }
         }
 
-        private WaitForSeconds WaitForNextSpawn()
+        private UniTask WaitForNextSpawn(CancellationToken cancellationToken)
         {
-            return new WaitForSeconds(Random.Range(_spawnIntervalRange.x, _spawnIntervalRange.y));
+            var seconds = UnityEngine.Random.Range(_spawnIntervalRange.x, _spawnIntervalRange.y);
+            return UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: cancellationToken);
         }
 
         private void SpawnAnimal()
@@ -42,9 +51,9 @@ namespace ZooWorld.Game.Features.Spawning
         private Vector3 RandomPosition()
         {
             return new Vector3(
-                Random.Range(-_spawnExtents.x, _spawnExtents.x),
+                UnityEngine.Random.Range(-_spawnExtents.x, _spawnExtents.x),
                 _spawnHeight,
-                Random.Range(-_spawnExtents.y, _spawnExtents.y));
+                UnityEngine.Random.Range(-_spawnExtents.y, _spawnExtents.y));
         }
     }
 }

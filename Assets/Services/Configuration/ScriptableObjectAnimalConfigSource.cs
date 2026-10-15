@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using ZooWorld.Game.Features.Animals.Common.Data;
 
 namespace ZooWorld.Services.Configuration
@@ -9,19 +13,58 @@ namespace ZooWorld.Services.Configuration
     /// </summary>
     public sealed class ScriptableObjectAnimalConfigSource : IAnimalConfigSource
     {
-        private readonly IReadOnlyList<AnimalDefinition> _definitions;
+        public const string AddressablesLabel = "animal-definition";
 
-        public ScriptableObjectAnimalConfigSource(IReadOnlyList<AnimalDefinition> definitions)
+        public async UniTask<IReadOnlyList<AnimalConfigDto>> LoadAsync(CancellationToken cancellationToken)
         {
-            _definitions = definitions ?? throw new ArgumentNullException(nameof(definitions));
+            var operation = Addressables.LoadAssetsAsync<AnimalDefinition>(AddressablesLabel, null);
+            try
+            {
+                await WaitForCompletion(operation, cancellationToken);
+                return CompleteLoad(operation);
+            }
+            finally
+            {
+                Release(operation);
+            }
         }
 
-        public IReadOnlyList<AnimalConfigDto> Load()
+        private static async UniTask WaitForCompletion(
+            AsyncOperationHandle<IList<AnimalDefinition>> operation,
+            CancellationToken cancellationToken)
         {
-            var result = new AnimalConfigDto[_definitions.Count];
-            for (var index = 0; index < _definitions.Count; index++)
+            while (!operation.IsDone)
             {
-                result[index] = _definitions[index].ToDto();
+                await UniTask.Yield(cancellationToken);
+            }
+        }
+
+        private static IReadOnlyList<AnimalConfigDto> CompleteLoad(
+            AsyncOperationHandle<IList<AnimalDefinition>> operation)
+        {
+            if (operation.Status != AsyncOperationStatus.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to load animal definitions with label '{AddressablesLabel}'.");
+            }
+
+            return MapDefinitions(operation.Result);
+        }
+
+        private static void Release(AsyncOperationHandle<IList<AnimalDefinition>> operation)
+        {
+            if (operation.IsValid())
+            {
+                Addressables.Release(operation);
+            }
+        }
+
+        private static IReadOnlyList<AnimalConfigDto> MapDefinitions(IList<AnimalDefinition> definitions)
+        {
+            var result = new AnimalConfigDto[definitions.Count];
+            for (var index = 0; index < definitions.Count; index++)
+            {
+                result[index] = definitions[index].ToDto();
             }
 
             return result;

@@ -3,6 +3,7 @@
   "rootNamespace": "ZooWorld.Game",
   "references": [
     "DOTween",
+    "UniTask",
     "VContainer"
   ],
   "autoReferenced": true

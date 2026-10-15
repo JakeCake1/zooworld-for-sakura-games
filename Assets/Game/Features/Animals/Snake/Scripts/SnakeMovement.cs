@@ -16,7 +16,7 @@ namespace ZooWorld.Game.Features.Animals.Snake
             _direction = RandomDirection();
         }
 
-        public void Tick(float deltaTime)
+        public void Step(float deltaTime)
         {
             _body.linearVelocity = _direction * _speed;
         }

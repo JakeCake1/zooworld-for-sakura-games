@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ZooWorld.Game.Features.Animals.Common.Data;
 using ZooWorld.Game.Features.Animals.Common.Movement;
@@ -11,9 +13,9 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
     {
         private AnimalConfigDto _definition;
         private IAnimalMovement _movement;
+        private CancellationTokenSource _movementCancellation;
         private FoodChainService _foodChain;
         private DeathStatistics _statistics;
-        private Camera _camera;
         private Action<GameObject> _release;
 
         public AnimalDiet Diet => _definition.Diet;
@@ -28,9 +30,10 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             Camera camera,
             Action<GameObject> release)
         {
-            StoreCommonDependencies(spawnSequence, definition, foodChain, statistics, camera, release);
+            StoreCommonDependencies(spawnSequence, definition, foodChain, statistics, release);
             _movement = CreateMovement(definition, GetComponent<Rigidbody>());
             RenameInstance();
+            StartMovement(camera);
         }
 
         public void Die()
@@ -46,17 +49,6 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
 
         protected abstract IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body);
 
-        private void FixedUpdate()
-        {
-            if (!CanMove())
-            {
-                return;
-            }
-
-            RedirectAtBoundary();
-            _movement.Tick(Time.fixedDeltaTime);
-        }
-
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.TryGetComponent<AnimalActor>(out var other))
@@ -70,14 +62,12 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             AnimalConfigDto definition,
             FoodChainService foodChain,
             DeathStatistics statistics,
-            Camera camera,
             Action<GameObject> release)
         {
             SpawnSequence = spawnSequence;
             _definition = definition;
             _foodChain = foodChain;
             _statistics = statistics;
-            _camera = camera;
             _release = release;
         }
 
@@ -94,6 +84,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
         private void MarkDead()
         {
             IsDead = true;
+            CancelMovement();
             _movement.Stop();
             _statistics.Record(Diet);
         }
@@ -103,27 +94,23 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             _release(gameObject);
         }
 
-        private void RedirectAtBoundary()
+        private void StartMovement(Camera camera)
         {
-            if (_camera == null || IsInsideCameraView())
-            {
-                return;
-            }
-
-            _movement.Redirect(DirectionToWorldCenter());
+            _movementCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+            var runner = new AnimalMovementRunner(_movement, transform, camera, CanMove);
+            runner.RunAsync(_movementCancellation.Token).SuppressCancellationThrow().Forget();
         }
 
-        private bool IsInsideCameraView()
+        private void CancelMovement()
         {
-            var viewport = _camera.WorldToViewportPoint(transform.position);
-            const float margin = 0.03f;
-            return viewport.x >= margin && viewport.x <= 1f - margin &&
-                   viewport.y >= margin && viewport.y <= 1f - margin;
+            _movementCancellation?.Cancel();
+            _movementCancellation?.Dispose();
+            _movementCancellation = null;
         }
 
-        private Vector3 DirectionToWorldCenter()
+        private void OnDestroy()
         {
-            return Vector3.ProjectOnPlane(-transform.position, Vector3.up);
+            CancelMovement();
         }
     }
 }

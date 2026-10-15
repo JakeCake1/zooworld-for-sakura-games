@@ -1,6 +1,6 @@
 namespace ZooWorld.Editor.AnimalScaffolding
 {
-    internal static class AnimalScaffoldingTemplates
+    public static class AnimalScaffoldingTemplates
     {
         public static string ConfigDto(string animalName)
         {
@@ -23,10 +23,12 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
 
         public static string Definition(string animalName)
         {
-            return $@"using ZooWorld.Game.Features.Animals.Common.Data;
+            return $@"using UnityEngine;
+using ZooWorld.Game.Features.Animals.Common.Data;
 
 namespace ZooWorld.Game.Features.Animals.{animalName}
 {{
+    [CreateAssetMenu(menuName = ""Zoo World/Animals/{animalName} Definition"", fileName = ""{animalName}Definition"")]
     public sealed class {animalName}Definition : AnimalDefinition
     {{
         public override AnimalConfigDto ToDto()
@@ -54,7 +56,7 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
             _body = body;
         }}
 
-        public void Tick(float deltaTime)
+        public void Step(float deltaTime)
         {{
             // Add species-specific movement.
         }}

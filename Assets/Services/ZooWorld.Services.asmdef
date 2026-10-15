@@ -4,6 +4,7 @@
   "references": [
     "ZooWorld.Game",
     "ZooWorld.Ui",
+    "UniTask",
     "VContainer",
     "VContainer.Unity",
     "Unity.Addressables",

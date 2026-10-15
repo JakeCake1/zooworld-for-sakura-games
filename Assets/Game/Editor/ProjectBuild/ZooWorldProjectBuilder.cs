@@ -12,10 +12,10 @@ namespace ZooWorld.Editor.ProjectBuild
         {
             EnsureContentFolders();
             var groundMaterial = BuildGroundMaterial();
-            var frog = AnimalContentBuilder.BuildFrog();
-            var snake = AnimalContentBuilder.BuildSnake();
+            AnimalContentBuilder.BuildFrog();
+            AnimalContentBuilder.BuildSnake();
             ReloadAssets();
-            SceneContentBuilder.Build(groundMaterial, ReloadFrog(), ReloadSnake());
+            SceneContentBuilder.Build(groundMaterial);
             ConfigureProject();
             SaveProject();
             Debug.Log("Zoo World demo content rebuilt successfully.");
@@ -40,22 +40,6 @@ namespace ZooWorld.Editor.ProjectBuild
         {
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-        }
-
-        private static AnimalDefinition ReloadFrog()
-        {
-            return LoadDefinition(ZooWorldProjectPaths.FrogDefinition);
-        }
-
-        private static AnimalDefinition ReloadSnake()
-        {
-            return LoadDefinition(ZooWorldProjectPaths.SnakeDefinition);
-        }
-
-        private static AnimalDefinition LoadDefinition(string path)
-        {
-            var definition = AssetDatabase.LoadAssetAtPath<AnimalDefinition>(path);
-            return definition != null ? definition : throw new System.InvalidOperationException($"Definition failed to import: {path}");
         }
 
         private static void ConfigureProject()

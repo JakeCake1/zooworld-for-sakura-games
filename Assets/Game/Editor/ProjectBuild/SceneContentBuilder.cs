@@ -14,14 +14,14 @@ namespace ZooWorld.Editor.ProjectBuild
     // Builds only scene-owned objects; gameplay and infrastructure live in their own assemblies.
     internal static class SceneContentBuilder
     {
-        public static void Build(Material groundMaterial, AnimalDefinition frog, AnimalDefinition snake)
+        public static void Build(Material groundMaterial)
         {
             var scene = CreateEmptyScene();
             CreateWorld(groundMaterial);
             var animalRoot = new GameObject("Animals").transform;
             CreateSpawner();
             CreateHud();
-            CreateCompositionRoot(new[] { frog, snake }, animalRoot);
+            CreateCompositionRoot(animalRoot);
             EditorSceneManager.SaveScene(scene, ZooWorldProjectPaths.MainScene);
         }
 
@@ -86,11 +86,11 @@ namespace ZooWorld.Editor.ProjectBuild
             new GameObject("AnimalSpawner").AddComponent<AnimalSpawner>();
         }
 
-        private static void CreateCompositionRoot(AnimalDefinition[] definitions, Transform animalRoot)
+        private static void CreateCompositionRoot(Transform animalRoot)
         {
             var scopeObject = new GameObject("ZooWorldLifetimeScope");
             var scope = scopeObject.AddComponent<ZooWorldLifetimeScope>();
-            scope.SetSceneReferences(definitions, animalRoot);
+            scope.SetSceneReferences(animalRoot);
             EditorUtility.SetDirty(scope);
             Selection.activeGameObject = scopeObject;
         }

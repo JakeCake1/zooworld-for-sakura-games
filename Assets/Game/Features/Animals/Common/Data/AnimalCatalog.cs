@@ -1,16 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace ZooWorld.Game.Features.Animals.Common.Data
 {
     public sealed class AnimalCatalog
     {
-        private readonly IReadOnlyList<AnimalConfigDto> _definitions;
+        private readonly IAnimalConfigSource _source;
+        private IReadOnlyList<AnimalConfigDto> _definitions = Array.Empty<AnimalConfigDto>();
 
         public AnimalCatalog(IAnimalConfigSource source)
         {
-            _definitions = LoadDefinitions(source);
+            _source = ValidateSource(source);
+        }
+
+        public async UniTask InitializeAsync(CancellationToken cancellationToken)
+        {
+            _definitions = await _source.LoadAsync(cancellationToken);
+            EnsureNotEmpty();
         }
 
         public AnimalConfigDto GetRandom()
@@ -19,9 +28,9 @@ namespace ZooWorld.Game.Features.Animals.Common.Data
             return SelectWeighted();
         }
 
-        private static IReadOnlyList<AnimalConfigDto> LoadDefinitions(IAnimalConfigSource source)
+        private static IAnimalConfigSource ValidateSource(IAnimalConfigSource source)
         {
-            return source?.Load() ?? throw new ArgumentNullException(nameof(source));
+            return source ?? throw new ArgumentNullException(nameof(source));
         }
 
         private void EnsureNotEmpty()

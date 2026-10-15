@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace ZooWorld.Game.Features.Animals.Common.Data
 {
     public interface IAnimalConfigSource
     {
-        IReadOnlyList<AnimalConfigDto> Load();
+        UniTask<IReadOnlyList<AnimalConfigDto>> LoadAsync(CancellationToken cancellationToken);
     }
 }

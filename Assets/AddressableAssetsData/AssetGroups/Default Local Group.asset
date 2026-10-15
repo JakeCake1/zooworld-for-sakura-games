@@ -25,6 +25,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abc5ab96e65a1524da9a88288c97b880
+    m_Address: animal-definitions/abc5ab96e65a1524da9a88288c97b880
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - animal-definition
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac5191f57ce3ad74facbe5a3845493c3
+    m_Address: animal-definitions/ac5191f57ce3ad74facbe5a3845493c3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - animal-definition
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 5ea2bfd0c911d164aa33a9359cf84c31, type: 2}
   m_SchemaSet:

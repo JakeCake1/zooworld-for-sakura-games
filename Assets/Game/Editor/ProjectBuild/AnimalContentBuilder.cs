@@ -4,6 +4,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using ZooWorld.Game.Features.Animals.Frog;
 using ZooWorld.Game.Features.Animals.Snake;
+using ZooWorld.Editor.AnimalScaffolding;
 using FrogActor = ZooWorld.Game.Features.Animals.Frog.Frog;
 using SnakeActor = ZooWorld.Game.Features.Animals.Snake.Snake;
 
@@ -41,7 +42,7 @@ namespace ZooWorld.Editor.ProjectBuild
 
         private static GameObject BuildSnakePrefab(Material material)
         {
-            var root = CreateCube("Snake", material, new Vector3(0.48f, 0.52f, 1.15f));
+            var root = CreateCube("Snake", material, new Vector3(0.96f, 0.6f, 0.96f));
             ConfigureBody(root.AddComponent<Rigidbody>());
             var actor = root.AddComponent<SnakeActor>();
             var feedback = ConfigureTastyFeedback(root);
@@ -134,6 +135,7 @@ namespace ZooWorld.Editor.ProjectBuild
             SetFloat(definition, "_jumpInterval", 1.2f);
             SetFloat(definition, "_jumpDistance", 2.1f);
             SetFloat(definition, "_jumpDuration", 0.35f);
+            AnimalDefinitionAddressables.Register(ZooWorldProjectPaths.FrogDefinition);
             return definition;
         }
 
@@ -142,6 +144,7 @@ namespace ZooWorld.Editor.ProjectBuild
             var definition = LoadOrCreate<SnakeDefinition>(ZooWorldProjectPaths.SnakeDefinition);
             SetCommonFields(definition, "snake", 1, 0.75f, "animals/snake");
             SetFloat(definition, "_speed", 2.1f);
+            AnimalDefinitionAddressables.Register(ZooWorldProjectPaths.SnakeDefinition);
             return definition;
         }
 

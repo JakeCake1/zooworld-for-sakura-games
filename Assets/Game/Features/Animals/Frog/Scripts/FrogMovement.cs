@@ -23,7 +23,7 @@ namespace ZooWorld.Game.Features.Animals.Frog
             ResetInitialState();
         }
 
-        public void Tick(float deltaTime)
+        public void Step(float deltaTime)
         {
             if (IsJumping())
             {

@@ -12,12 +12,10 @@ namespace ZooWorld.Services.Composition
 {
     public sealed class ZooWorldLifetimeScope : LifetimeScope
     {
-        [SerializeField] private AnimalDefinition[] _animalDefinitions;
         [SerializeField] private Transform _animalRoot;
 
-        public void SetSceneReferences(AnimalDefinition[] definitions, Transform animalRoot)
+        public void SetSceneReferences(Transform animalRoot)
         {
-            _animalDefinitions = definitions;
             _animalRoot = animalRoot;
         }
 
@@ -30,7 +28,7 @@ namespace ZooWorld.Services.Composition
 
         private void RegisterConfiguration(IContainerBuilder builder)
         {
-            IAnimalConfigSource source = new ScriptableObjectAnimalConfigSource(_animalDefinitions);
+            IAnimalConfigSource source = new ScriptableObjectAnimalConfigSource();
             builder.RegisterInstance(source);
             builder.RegisterInstance(new AnimalCatalog(source));
         }

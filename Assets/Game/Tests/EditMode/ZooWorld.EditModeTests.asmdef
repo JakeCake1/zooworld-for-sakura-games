@@ -2,7 +2,9 @@
   "name": "ZooWorld.EditModeTests",
   "rootNamespace": "ZooWorld.Tests.EditMode",
   "references": [
-    "ZooWorld.Game"
+    "ZooWorld.Game",
+    "ZooWorld.Editor",
+    "UniTask"
   ],
   "optionalUnityReferences": ["TestAssemblies"],
   "includePlatforms": ["Editor"],
