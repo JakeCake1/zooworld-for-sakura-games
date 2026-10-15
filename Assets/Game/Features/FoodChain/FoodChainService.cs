@@ -47,21 +47,9 @@ namespace ZooWorld.Game.Features.FoodChain
 
         private void ResolveEncounter(Animal first, Animal second)
         {
-            var result = FoodChainRules.Resolve(first.FeedingType, first.SpawnSequence, second.FeedingType, second.SpawnSequence);
-            ApplyResult(result, first, second);
-        }
-
-        private void ApplyResult(EncounterResult result, Animal first, Animal second)
-        {
-            switch (result)
-            {
-                case EncounterResult.FirstEatsSecond:
-                    Feed(first, second);
-                    break;
-                case EncounterResult.SecondEatsFirst:
-                    Feed(second, first);
-                    break;
-            }
+            FoodChainRules
+                .Resolve(first.FeedingType, first.SpawnSequence, second.FeedingType, second.SpawnSequence)
+                .Apply(first, second, Feed);
         }
 
         private void Feed(Animal eater, Animal food)
