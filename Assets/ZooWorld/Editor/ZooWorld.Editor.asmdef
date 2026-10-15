@@ -1,0 +1,17 @@
+{
+  "name": "ZooWorld.Editor",
+  "rootNamespace": "ZooWorld.Editor",
+  "references": [
+    "ZooWorld.Runtime",
+    "Unity.Addressables",
+    "Unity.Addressables.Editor",
+    "Unity.ResourceManager",
+    "Unity.ugui",
+    "VContainer",
+    "VContainer.Unity"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": true
+}
