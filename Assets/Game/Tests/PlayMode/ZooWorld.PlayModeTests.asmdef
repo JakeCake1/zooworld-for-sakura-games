@@ -1,0 +1,12 @@
+{
+  "name": "ZooWorld.PlayModeTests",
+  "rootNamespace": "ZooWorld.Tests.PlayMode",
+  "references": [
+    "ZooWorld.Game",
+    "ZooWorld.Services",
+    "VContainer",
+    "VContainer.Unity"
+  ],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

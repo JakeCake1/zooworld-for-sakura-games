@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ZooWorld/Scenes/Main.unity
-    guid: 46b11f5568ffa184f881807fe9d89076
+    path: Assets/Game/Scenes/Main.unity
+    guid: e9391a87e2f2d544ebc1a4252637997d
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 383d0bc9b79156e4cbf9f1d2bc0f1a4b, type: 2}
   m_UseUCBPForAssetBundles: 0

@@ -1,0 +1,13 @@
+{
+  "name": "ZooWorld.Services",
+  "rootNamespace": "ZooWorld.Services",
+  "references": [
+    "ZooWorld.Game",
+    "ZooWorld.Ui",
+    "VContainer",
+    "VContainer.Unity",
+    "Unity.Addressables",
+    "Unity.ResourceManager"
+  ],
+  "autoReferenced": true
+}

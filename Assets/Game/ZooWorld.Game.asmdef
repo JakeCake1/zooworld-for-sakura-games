@@ -1,0 +1,9 @@
+{
+  "name": "ZooWorld.Game",
+  "rootNamespace": "ZooWorld.Game",
+  "references": [
+    "DOTween",
+    "VContainer"
+  ],
+  "autoReferenced": true
+}

@@ -15,13 +15,13 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 0f10e633b2186ff4882a7910b6126fac
   m_SerializeEntries:
-  - m_GUID: 331c94a39a3d3ba41a773110c686093e
-    m_Address: animals/snake
+  - m_GUID: 0fa1c9e13faa5d44db8d9479c8c373c0
+    m_Address: animals/frog
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a5929c82776f07749b30b560713f0798
-    m_Address: animals/frog
+  - m_GUID: 6ca94dbc740a37648a4fa14cae01584f
+    m_Address: animals/snake
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

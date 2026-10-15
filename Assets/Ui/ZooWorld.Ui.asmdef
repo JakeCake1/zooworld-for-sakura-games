@@ -1,0 +1,10 @@
+{
+  "name": "ZooWorld.Ui",
+  "rootNamespace": "ZooWorld.Ui",
+  "references": [
+    "ZooWorld.Game",
+    "Unity.ugui",
+    "VContainer"
+  ],
+  "autoReferenced": true
+}
