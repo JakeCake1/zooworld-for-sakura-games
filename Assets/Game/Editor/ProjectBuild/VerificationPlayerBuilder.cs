@@ -7,10 +7,15 @@ using UnityEngine;
 
 namespace ZooWorld.Editor.ProjectBuild
 {
-    public static class VerificationPlayerBuilder
+    public sealed class VerificationPlayerBuilder
     {
         [MenuItem("Zoo World/Build Windows Verification Player")]
         public static void Build()
+        {
+            new VerificationPlayerBuilder().BuildPlayerAndContent();
+        }
+
+        private void BuildPlayerAndContent()
         {
             ZooWorldProjectBuilder.Build();
             BuildAddressables();
@@ -19,7 +24,7 @@ namespace ZooWorld.Editor.ProjectBuild
             Debug.Log($"Verification player built: {report.summary.totalSize} bytes.");
         }
 
-        private static void BuildAddressables()
+        private void BuildAddressables()
         {
             AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
             if (!string.IsNullOrEmpty(result.Error))
@@ -28,7 +33,7 @@ namespace ZooWorld.Editor.ProjectBuild
             }
         }
 
-        private static BuildReport BuildPlayer()
+        private BuildReport BuildPlayer()
         {
             return BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
@@ -39,7 +44,7 @@ namespace ZooWorld.Editor.ProjectBuild
             });
         }
 
-        private static void EnsureSucceeded(BuildReport report)
+        private void EnsureSucceeded(BuildReport report)
         {
             if (report.summary.result != BuildResult.Succeeded)
             {

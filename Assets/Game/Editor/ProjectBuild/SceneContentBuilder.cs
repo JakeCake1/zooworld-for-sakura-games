@@ -12,9 +12,9 @@ using ZooWorld.Ui.Hud;
 namespace ZooWorld.Editor.ProjectBuild
 {
     // Builds only scene-owned objects; gameplay and infrastructure live in their own assemblies.
-    internal static class SceneContentBuilder
+    internal sealed class SceneContentBuilder
     {
-        public static void Build(Material groundMaterial)
+        public void Build(Material groundMaterial)
         {
             var scene = CreateEmptyScene();
             CreateWorld(groundMaterial);
@@ -25,19 +25,19 @@ namespace ZooWorld.Editor.ProjectBuild
             EditorSceneManager.SaveScene(scene, ZooWorldProjectPaths.MainScene);
         }
 
-        private static Scene CreateEmptyScene()
+        private Scene CreateEmptyScene()
         {
             return EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
 
-        private static void CreateWorld(Material groundMaterial)
+        private void CreateWorld(Material groundMaterial)
         {
             CreateCamera();
             CreateLight();
             CreateGround(groundMaterial);
         }
 
-        private static void CreateCamera()
+        private void CreateCamera()
         {
             var cameraObject = new GameObject("Main Camera");
             ConfigureCameraTransform(cameraObject.transform);
@@ -45,13 +45,13 @@ namespace ZooWorld.Editor.ProjectBuild
             cameraObject.tag = "MainCamera";
         }
 
-        private static void ConfigureCameraTransform(Transform cameraTransform)
+        private void ConfigureCameraTransform(Transform cameraTransform)
         {
             cameraTransform.position = new Vector3(0f, 15f, 0f);
             cameraTransform.rotation = Quaternion.Euler(90f, 0f, 0f);
         }
 
-        private static void ConfigureCamera(Camera camera)
+        private void ConfigureCamera(Camera camera)
         {
             camera.orthographic = true;
             camera.orthographicSize = 6.5f;
@@ -59,20 +59,20 @@ namespace ZooWorld.Editor.ProjectBuild
             camera.backgroundColor = new Color(0.06f, 0.09f, 0.12f);
         }
 
-        private static void CreateLight()
+        private void CreateLight()
         {
             var lightObject = new GameObject("Directional Light");
             lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
             ConfigureLight(lightObject.AddComponent<Light>());
         }
 
-        private static void ConfigureLight(Light light)
+        private void ConfigureLight(Light light)
         {
             light.type = LightType.Directional;
             light.intensity = 1.2f;
         }
 
-        private static void CreateGround(Material material)
+        private void CreateGround(Material material)
         {
             var ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
             ground.name = "Ground";
@@ -81,12 +81,12 @@ namespace ZooWorld.Editor.ProjectBuild
             ground.GetComponent<Renderer>().sharedMaterial = material;
         }
 
-        private static void CreateSpawner()
+        private void CreateSpawner()
         {
             new GameObject("AnimalSpawner").AddComponent<AnimalSpawner>();
         }
 
-        private static void CreateCompositionRoot(Transform animalRoot)
+        private void CreateCompositionRoot(Transform animalRoot)
         {
             var scopeObject = new GameObject("ZooWorldLifetimeScope");
             var scope = scopeObject.AddComponent<ZooWorldLifetimeScope>();
@@ -95,15 +95,15 @@ namespace ZooWorld.Editor.ProjectBuild
             Selection.activeGameObject = scopeObject;
         }
 
-        private static void CreateHud()
+        private void CreateHud()
         {
             var canvas = CreateCanvas();
-            var presenter = canvas.gameObject.AddComponent<HudPresenter>();
-            AssignHudTexts(presenter, canvas.transform);
+            var view = canvas.gameObject.AddComponent<HudView>();
+            AssignHudTexts(view, canvas.transform);
             CreateEventSystem();
         }
 
-        private static Canvas CreateCanvas()
+        private Canvas CreateCanvas()
         {
             var canvasObject = new GameObject(
                 "HUD",
@@ -117,21 +117,21 @@ namespace ZooWorld.Editor.ProjectBuild
             return canvas;
         }
 
-        private static void ConfigureScaler(CanvasScaler scaler)
+        private void ConfigureScaler(CanvasScaler scaler)
         {
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
         }
 
-        private static void AssignHudTexts(HudPresenter presenter, Transform parent)
+        private void AssignHudTexts(HudView view, Transform parent)
         {
-            var serialized = new SerializedObject(presenter);
+            var serialized = new SerializedObject(view);
             serialized.FindProperty("_preyDeaths").objectReferenceValue = CreateHudText(parent, "PreyDeaths", new Vector2(-30f, -30f));
             serialized.FindProperty("_predatorDeaths").objectReferenceValue = CreateHudText(parent, "PredatorDeaths", new Vector2(-30f, -75f));
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static Text CreateHudText(Transform parent, string name, Vector2 position)
+        private Text CreateHudText(Transform parent, string name, Vector2 position)
         {
             var textObject = new GameObject(name, typeof(RectTransform), typeof(Text));
             textObject.transform.SetParent(parent, false);
@@ -139,7 +139,7 @@ namespace ZooWorld.Editor.ProjectBuild
             return ConfigureText(textObject.GetComponent<Text>());
         }
 
-        private static void ConfigureRect(RectTransform rect, Vector2 position)
+        private void ConfigureRect(RectTransform rect, Vector2 position)
         {
             rect.anchorMin = Vector2.one;
             rect.anchorMax = Vector2.one;
@@ -148,7 +148,7 @@ namespace ZooWorld.Editor.ProjectBuild
             rect.sizeDelta = new Vector2(340f, 42f);
         }
 
-        private static Text ConfigureText(Text text)
+        private Text ConfigureText(Text text)
         {
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.fontSize = 28;
@@ -158,7 +158,7 @@ namespace ZooWorld.Editor.ProjectBuild
             return text;
         }
 
-        private static void CreateEventSystem()
+        private void CreateEventSystem()
         {
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         }

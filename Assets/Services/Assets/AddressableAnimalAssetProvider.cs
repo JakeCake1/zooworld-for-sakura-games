@@ -26,7 +26,7 @@ namespace ZooWorld.Services.Assets
             }
         }
 
-        private static void CompleteInstantiation(
+        private void CompleteInstantiation(
             AsyncOperationHandle<GameObject> handle,
             string address,
             Action<GameObject> onLoaded)
@@ -40,7 +40,7 @@ namespace ZooWorld.Services.Assets
             ReportFailure(handle, address);
         }
 
-        private static void ReportFailure(AsyncOperationHandle<GameObject> handle, string address)
+        private void ReportFailure(AsyncOperationHandle<GameObject> handle, string address)
         {
             Debug.LogError($"Failed to load addressable animal prefab '{address}'.");
             Addressables.Release(handle);

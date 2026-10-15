@@ -6,7 +6,7 @@ using ZooWorld.Game.Features.Animals.Common.Presentation;
 
 namespace ZooWorld.Game.Features.Animals.Frog
 {
-    public sealed class Frog : AnimalActor
+    public sealed class Frog : Animal
     {
         protected override IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body)
         {
@@ -14,7 +14,7 @@ namespace ZooWorld.Game.Features.Animals.Frog
             return new FrogMovement(body, config ?? throw WrongConfig(definition));
         }
 
-        private static Exception WrongConfig(AnimalConfigDto definition)
+        private Exception WrongConfig(AnimalConfigDto definition)
         {
             return new ArgumentException($"Frog requires {nameof(FrogConfigDto)}, received {definition?.GetType().Name}.");
         }

@@ -18,10 +18,10 @@ namespace ZooWorld.Tests.PlayMode
             Assert.That(Object.FindFirstObjectByType<ZooWorldLifetimeScope>(), Is.Not.Null);
             AssertGroundIsBrown();
             yield return WaitForSpawn();
-            Assert.That(Object.FindFirstObjectByType<AnimalActor>(), Is.Not.Null);
+            Assert.That(Object.FindFirstObjectByType<Animal>(), Is.Not.Null);
         }
 
-        private static void AssertGroundIsBrown()
+        private void AssertGroundIsBrown()
         {
             var ground = GameObject.Find("Ground");
             Assert.That(ground, Is.Not.Null);
@@ -30,10 +30,10 @@ namespace ZooWorld.Tests.PlayMode
             Assert.That(color.g, Is.GreaterThan(color.b));
         }
 
-        private static IEnumerator WaitForSpawn()
+        private IEnumerator WaitForSpawn()
         {
             var timeout = Time.time + 5f;
-            while (Object.FindFirstObjectByType<AnimalActor>() == null && Time.time < timeout)
+            while (Object.FindFirstObjectByType<Animal>() == null && Time.time < timeout)
             {
                 yield return null;
             }

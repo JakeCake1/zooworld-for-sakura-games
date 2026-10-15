@@ -10,8 +10,8 @@ namespace ZooWorld.Tests.EditMode
         public void Record_UpdatesSeparateCounters()
         {
             var statistics = new DeathStatistics();
-            statistics.Record(AnimalDiet.Prey);
-            statistics.Record(AnimalDiet.Predator);
+            statistics.Record(FeedingType.Prey);
+            statistics.Record(FeedingType.Predator);
             Assert.That(statistics.PreyDeaths, Is.EqualTo(1));
             Assert.That(statistics.PredatorDeaths, Is.EqualTo(1));
         }

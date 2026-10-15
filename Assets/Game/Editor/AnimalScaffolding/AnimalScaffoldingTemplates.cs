@@ -1,8 +1,8 @@
 namespace ZooWorld.Editor.AnimalScaffolding
 {
-    public static class AnimalScaffoldingTemplates
+    public sealed class AnimalScaffoldingTemplates
     {
-        public static string ConfigDto(string animalName)
+        public string ConfigDto(string animalName)
         {
             return $@"using System;
 using ZooWorld.Game.Features.Animals.Common.Data;
@@ -12,8 +12,8 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
     [Serializable]
     public sealed class {animalName}ConfigDto : AnimalConfigDto
     {{
-        public {animalName}ConfigDto(string id, AnimalDiet diet, float spawnWeight, string prefabAddress)
-            : base(id, diet, spawnWeight, prefabAddress)
+        public {animalName}ConfigDto(string id, FeedingType feedingType, float spawnWeight, string prefabAddress)
+            : base(id, feedingType, spawnWeight, prefabAddress)
         {{
         }}
     }}
@@ -21,7 +21,7 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
 ";
         }
 
-        public static string Definition(string animalName)
+        public string Definition(string animalName)
         {
             return $@"using UnityEngine;
 using ZooWorld.Game.Features.Animals.Common.Data;
@@ -33,14 +33,14 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
     {{
         public override AnimalConfigDto ToDto()
         {{
-            return new {animalName}ConfigDto(Id, Diet, SpawnWeight, PrefabAddress);
+            return new {animalName}ConfigDto(Id, FeedingType, SpawnWeight, PrefabAddress);
         }}
     }}
 }}
 ";
         }
 
-        public static string Movement(string animalName)
+        public string Movement(string animalName)
         {
             return $@"using UnityEngine;
 using ZooWorld.Game.Features.Animals.Common.Movement;
@@ -75,7 +75,7 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
 ";
         }
 
-        public static string Actor(string animalName)
+        public string Animal(string animalName)
         {
             return $@"using System;
 using UnityEngine;
@@ -85,7 +85,7 @@ using ZooWorld.Game.Features.Animals.Common.Presentation;
 
 namespace ZooWorld.Game.Features.Animals.{animalName}
 {{
-    public sealed class {animalName} : AnimalActor
+    public sealed class {animalName} : Animal
     {{
         protected override IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body)
         {{
@@ -93,7 +93,7 @@ namespace ZooWorld.Game.Features.Animals.{animalName}
             return new {animalName}Movement(body, config ?? throw WrongConfig(definition));
         }}
 
-        private static Exception WrongConfig(AnimalConfigDto definition)
+        private Exception WrongConfig(AnimalConfigDto definition)
         {{
             return new ArgumentException($""{animalName} requires {animalName}ConfigDto, received {{definition?.GetType().Name}}."");
         }}

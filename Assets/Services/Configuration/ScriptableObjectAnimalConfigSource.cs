@@ -29,7 +29,7 @@ namespace ZooWorld.Services.Configuration
             }
         }
 
-        private static async UniTask WaitForCompletion(
+        private async UniTask WaitForCompletion(
             AsyncOperationHandle<IList<AnimalDefinition>> operation,
             CancellationToken cancellationToken)
         {
@@ -39,7 +39,7 @@ namespace ZooWorld.Services.Configuration
             }
         }
 
-        private static IReadOnlyList<AnimalConfigDto> CompleteLoad(
+        private IReadOnlyList<AnimalConfigDto> CompleteLoad(
             AsyncOperationHandle<IList<AnimalDefinition>> operation)
         {
             if (operation.Status != AsyncOperationStatus.Succeeded)
@@ -51,7 +51,7 @@ namespace ZooWorld.Services.Configuration
             return MapDefinitions(operation.Result);
         }
 
-        private static void Release(AsyncOperationHandle<IList<AnimalDefinition>> operation)
+        private void Release(AsyncOperationHandle<IList<AnimalDefinition>> operation)
         {
             if (operation.IsValid())
             {
@@ -59,7 +59,7 @@ namespace ZooWorld.Services.Configuration
             }
         }
 
-        private static IReadOnlyList<AnimalConfigDto> MapDefinitions(IList<AnimalDefinition> definitions)
+        private IReadOnlyList<AnimalConfigDto> MapDefinitions(IList<AnimalDefinition> definitions)
         {
             var result = new AnimalConfigDto[definitions.Count];
             for (var index = 0; index < definitions.Count; index++)

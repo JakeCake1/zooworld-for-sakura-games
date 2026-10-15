@@ -764,7 +764,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8790d8d95a6eaf44a08a2a2651d0b78, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: ZooWorld.Ui::ZooWorld.Ui.Hud.HudPresenter
+  m_EditorClassIdentifier: ZooWorld.Ui::ZooWorld.Ui.Hud.HudView
   _preyDeaths: {fileID: 93370116}
   _predatorDeaths: {fileID: 815925200}
 --- !u!114 &1636055909

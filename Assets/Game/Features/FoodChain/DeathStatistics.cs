@@ -9,15 +9,15 @@ namespace ZooWorld.Game.Features.FoodChain
         public int PredatorDeaths { get; private set; }
         public event Action Changed;
 
-        public void Record(AnimalDiet diet)
+        public void Record(FeedingType feedingType)
         {
-            Increment(diet);
+            Increment(feedingType);
             Changed?.Invoke();
         }
 
-        private void Increment(AnimalDiet diet)
+        private void Increment(FeedingType feedingType)
         {
-            if (diet == AnimalDiet.Prey)
+            if (feedingType == FeedingType.Prey)
             {
                 PreyDeaths++;
                 return;

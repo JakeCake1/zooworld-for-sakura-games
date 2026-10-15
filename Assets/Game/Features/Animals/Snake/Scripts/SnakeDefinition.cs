@@ -10,7 +10,7 @@ namespace ZooWorld.Game.Features.Animals.Snake
 
         public override AnimalConfigDto ToDto()
         {
-            return new SnakeConfigDto(Id, Diet, SpawnWeight, PrefabAddress, _speed);
+            return new SnakeConfigDto(Id, FeedingType, SpawnWeight, PrefabAddress, _speed);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace ZooWorld.Tests.EditMode
         [Test]
         public void GeneratedDefinition_HasCreateAssetMenu()
         {
-            var source = AnimalScaffoldingTemplates.Definition("Bear");
+            var source = new AnimalScaffoldingTemplates().Definition("Bear");
             Assert.That(source, Does.Contain("[CreateAssetMenu"));
             Assert.That(source, Does.Contain("Zoo World/Animals/Bear Definition"));
         }
@@ -27,7 +27,7 @@ namespace ZooWorld.Tests.EditMode
             Assert.That(snakeScale, Is.EqualTo(frogScale * 1.2f).Using(Vector3ComparerWithEqualsOperator.Instance));
         }
 
-        private static Vector3 LoadScale(string path)
+        private Vector3 LoadScale(string path)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             Assert.That(prefab, Is.Not.Null, $"Prefab not found: {path}");

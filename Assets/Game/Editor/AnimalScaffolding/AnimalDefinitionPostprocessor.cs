@@ -10,15 +10,16 @@ namespace ZooWorld.Editor.AnimalScaffolding
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            RegisterAll(importedAssets);
-            RegisterAll(movedAssets);
+            var addressables = new AnimalDefinitionAddressables();
+            RegisterAll(importedAssets, addressables);
+            RegisterAll(movedAssets, addressables);
         }
 
-        private static void RegisterAll(string[] assetPaths)
+        private static void RegisterAll(string[] assetPaths, AnimalDefinitionAddressables addressables)
         {
             for (var index = 0; index < assetPaths.Length; index++)
             {
-                AnimalDefinitionAddressables.Register(assetPaths[index]);
+                addressables.Register(assetPaths[index]);
             }
         }
     }

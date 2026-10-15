@@ -35,7 +35,7 @@ namespace ZooWorld.Game.Features.Animals.Snake
             _body.linearVelocity = Vector3.zero;
         }
 
-        private static Vector3 RandomDirection()
+        private Vector3 RandomDirection()
         {
             var direction = Random.insideUnitCircle.normalized;
             return new Vector3(direction.x, 0f, direction.y);

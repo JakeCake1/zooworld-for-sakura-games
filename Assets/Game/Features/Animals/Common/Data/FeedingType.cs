@@ -1,6 +1,6 @@
 namespace ZooWorld.Game.Features.Animals.Common.Data
 {
-    public enum AnimalDiet
+    public enum FeedingType
     {
         Prey,
         Predator

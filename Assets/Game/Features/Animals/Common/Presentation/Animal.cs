@@ -9,7 +9,7 @@ using ZooWorld.Game.Features.FoodChain;
 namespace ZooWorld.Game.Features.Animals.Common.Presentation
 {
     [RequireComponent(typeof(Rigidbody), typeof(Collider))]
-    public abstract class AnimalActor : MonoBehaviour
+    public abstract class Animal : MonoBehaviour
     {
         private AnimalConfigDto _definition;
         private IAnimalMovement _movement;
@@ -18,7 +18,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
         private DeathStatistics _statistics;
         private Action<GameObject> _release;
 
-        public AnimalDiet Diet => _definition.Diet;
+        public FeedingType FeedingType => _definition.FeedingType;
         public int SpawnSequence { get; private set; }
         public bool IsDead { get; private set; }
 
@@ -51,7 +51,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.TryGetComponent<AnimalActor>(out var other))
+            if (collision.gameObject.TryGetComponent<Animal>(out var other))
             {
                 _foodChain.TryResolve(this, other, Time.frameCount);
             }
@@ -86,7 +86,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             IsDead = true;
             CancelMovement();
             _movement.Stop();
-            _statistics.Record(Diet);
+            _statistics.Record(FeedingType);
         }
 
         private void ReleaseInstance()

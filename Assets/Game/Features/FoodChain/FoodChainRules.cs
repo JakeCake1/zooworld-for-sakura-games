@@ -5,22 +5,22 @@ namespace ZooWorld.Game.Features.FoodChain
     public static class FoodChainRules
     {
         public static EncounterResult Resolve(
-            AnimalDiet firstDiet,
+            FeedingType firstFeedingType,
             int firstSpawnSequence,
-            AnimalDiet secondDiet,
+            FeedingType secondFeedingType,
             int secondSpawnSequence)
         {
-            if (BothArePrey(firstDiet, secondDiet))
+            if (BothArePrey(firstFeedingType, secondFeedingType))
             {
                 return EncounterResult.None;
             }
 
-            if (firstDiet == AnimalDiet.Predator && secondDiet == AnimalDiet.Prey)
+            if (firstFeedingType == FeedingType.Predator && secondFeedingType == FeedingType.Prey)
             {
                 return EncounterResult.FirstEatsSecond;
             }
 
-            if (firstDiet == AnimalDiet.Prey && secondDiet == AnimalDiet.Predator)
+            if (firstFeedingType == FeedingType.Prey && secondFeedingType == FeedingType.Predator)
             {
                 return EncounterResult.SecondEatsFirst;
             }
@@ -28,9 +28,9 @@ namespace ZooWorld.Game.Features.FoodChain
             return OlderAnimalWins(firstSpawnSequence, secondSpawnSequence);
         }
 
-        private static bool BothArePrey(AnimalDiet first, AnimalDiet second)
+        private static bool BothArePrey(FeedingType first, FeedingType second)
         {
-            return first == AnimalDiet.Prey && second == AnimalDiet.Prey;
+            return first == FeedingType.Prey && second == FeedingType.Prey;
         }
 
         private static EncounterResult OlderAnimalWins(int firstSequence, int secondSequence)

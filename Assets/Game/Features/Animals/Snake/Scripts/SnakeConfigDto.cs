@@ -8,11 +8,11 @@ namespace ZooWorld.Game.Features.Animals.Snake
     {
         public SnakeConfigDto(
             string id,
-            AnimalDiet diet,
+            FeedingType feedingType,
             float spawnWeight,
             string prefabAddress,
             float speed)
-            : base(id, diet, spawnWeight, prefabAddress)
+            : base(id, feedingType, spawnWeight, prefabAddress)
         {
             Speed = speed;
         }

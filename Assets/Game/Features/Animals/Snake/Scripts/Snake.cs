@@ -6,7 +6,7 @@ using ZooWorld.Game.Features.Animals.Common.Presentation;
 
 namespace ZooWorld.Game.Features.Animals.Snake
 {
-    public sealed class Snake : AnimalActor, IPredator
+    public sealed class Snake : Animal, IPredator
     {
         [SerializeField] private TastyFeedback _tastyFeedback;
 
@@ -24,7 +24,7 @@ namespace ZooWorld.Game.Features.Animals.Snake
             return new SnakeMovement(body, config ?? throw WrongConfig(definition));
         }
 
-        private static Exception WrongConfig(AnimalConfigDto definition)
+        private Exception WrongConfig(AnimalConfigDto definition)
         {
             return new ArgumentException($"Snake requires {nameof(SnakeConfigDto)}, received {definition?.GetType().Name}.");
         }

@@ -8,13 +8,13 @@ namespace ZooWorld.Game.Features.Animals.Frog
     {
         public FrogConfigDto(
             string id,
-            AnimalDiet diet,
+            FeedingType feedingType,
             float spawnWeight,
             string prefabAddress,
             float jumpInterval,
             float jumpDistance,
             float jumpDuration)
-            : base(id, diet, spawnWeight, prefabAddress)
+            : base(id, feedingType, spawnWeight, prefabAddress)
         {
             JumpInterval = jumpInterval;
             JumpDistance = jumpDistance;

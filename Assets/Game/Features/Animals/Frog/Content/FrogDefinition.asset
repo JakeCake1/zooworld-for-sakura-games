@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FrogDefinition
   m_EditorClassIdentifier: ZooWorld.Game::ZooWorld.Game.Features.Animals.Frog.FrogDefinition
   _id: frog
-  _diet: 0
+  _feedingType: 0
   _spawnWeight: 1.25
   _prefabAddress: animals/frog
   _jumpInterval: 1.2

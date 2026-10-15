@@ -28,7 +28,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Data
             return SelectWeighted();
         }
 
-        private static IAnimalConfigSource ValidateSource(IAnimalConfigSource source)
+        private IAnimalConfigSource ValidateSource(IAnimalConfigSource source)
         {
             return source ?? throw new ArgumentNullException(nameof(source));
         }
@@ -78,7 +78,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Data
             return _definitions[UnityEngine.Random.Range(0, _definitions.Count)];
         }
 
-        private static float PositiveWeight(AnimalConfigDto definition)
+        private float PositiveWeight(AnimalConfigDto definition)
         {
             return Mathf.Max(0f, definition.SpawnWeight);
         }

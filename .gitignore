@@ -45,6 +45,7 @@
 ExportedObj/
 .consulo/
 *.csproj
+Directory.Build.props
 *.unityproj
 *.sln
 *.slnx

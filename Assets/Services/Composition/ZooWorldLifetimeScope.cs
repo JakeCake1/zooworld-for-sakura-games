@@ -41,10 +41,10 @@ namespace ZooWorld.Services.Composition
             builder.Register<AnimalFactory>(Lifetime.Singleton).WithParameter("animalRoot", _animalRoot);
         }
 
-        private static void RegisterSceneComponents(IContainerBuilder builder)
+        private void RegisterSceneComponents(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<AnimalSpawner>();
-            builder.RegisterComponentInHierarchy<HudPresenter>();
+            builder.RegisterComponentInHierarchy<HudView>();
         }
     }
 }

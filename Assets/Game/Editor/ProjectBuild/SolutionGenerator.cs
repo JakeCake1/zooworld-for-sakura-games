@@ -7,23 +7,28 @@ using UnityEngine;
 
 namespace ZooWorld.Editor.ProjectBuild
 {
-    public static class SolutionGenerator
+    public sealed class SolutionGenerator
     {
         [MenuItem("Zoo World/Generate Rider Solution")]
         public static void Generate()
         {
+            new SolutionGenerator().GenerateSolution();
+        }
+
+        private void GenerateSolution()
+        {
             AssetDatabase.Refresh();
             SelectRiderEditor();
-            EnsureSynchronized();
+            CodeEditor.CurrentEditor.SyncAll();
             LogSolutionPath();
         }
 
-        private static void SelectRiderEditor()
+        private void SelectRiderEditor()
         {
             CodeEditor.SetExternalScriptEditor(FindRiderExecutable());
         }
 
-        private static string FindRiderExecutable()
+        private string FindRiderExecutable()
         {
             var jetBrainsDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -35,12 +40,7 @@ namespace ZooWorld.Editor.ProjectBuild
                 .First();
         }
 
-        private static void EnsureSynchronized()
-        {
-            CodeEditor.CurrentEditor.SyncAll();
-        }
-
-        private static void LogSolutionPath()
+        private void LogSolutionPath()
         {
             var projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
             Debug.Log($"Rider solution generated in: {projectRoot}");

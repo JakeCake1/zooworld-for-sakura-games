@@ -118,7 +118,7 @@ namespace ZooWorld.Game.Features.Animals.Frog
             _jumpTween = null;
         }
 
-        private static Vector3 RandomDirection()
+        private Vector3 RandomDirection()
         {
             var direction = Random.insideUnitCircle.normalized;
             return new Vector3(direction.x, 0f, direction.y);

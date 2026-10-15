@@ -38,18 +38,18 @@ namespace ZooWorld.Game.Features.Spawning
 
         private void InitializeInstance(GameObject instance, AnimalConfigDto definition)
         {
-            if (!instance.TryGetComponent<AnimalActor>(out var actor))
+            if (!instance.TryGetComponent<Animal>(out var animal))
             {
                 RejectInvalidPrefab(instance, definition.PrefabAddress);
                 return;
             }
 
-            InitializeActor(actor, definition);
+            InitializeAnimal(animal, definition);
         }
 
-        private void InitializeActor(AnimalActor actor, AnimalConfigDto definition)
+        private void InitializeAnimal(Animal animal, AnimalConfigDto definition)
         {
-            actor.Initialize(
+            animal.Initialize(
                 ++_spawnSequence,
                 definition,
                 _foodChain,
@@ -60,7 +60,7 @@ namespace ZooWorld.Game.Features.Spawning
 
         private void RejectInvalidPrefab(GameObject instance, string address)
         {
-            Debug.LogError($"Addressable '{address}' has no AnimalActor component.");
+            Debug.LogError($"Addressable '{address}' has no Animal component.");
             _assetProvider.Release(instance);
         }
     }

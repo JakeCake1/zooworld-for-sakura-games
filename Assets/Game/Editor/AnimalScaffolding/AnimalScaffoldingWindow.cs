@@ -8,7 +8,9 @@ namespace ZooWorld.Editor.AnimalScaffolding
     public sealed class AnimalScaffoldingWindow : EditorWindow
     {
         private const string DefaultRoot = "Assets/Game/Features/Animals";
-        private static readonly Regex IdentifierPattern = new Regex("^[A-Za-z_][A-Za-z0-9_]*$");
+        private readonly Regex _identifierPattern = new Regex("^[A-Za-z_][A-Za-z0-9_]*$");
+        private readonly AnimalScaffoldingTemplates _templates = new AnimalScaffoldingTemplates();
+        private readonly EditorFolderUtility _folderUtility = new EditorFolderUtility();
         private string _animalName = "NewAnimal";
         private string _rootFolder = DefaultRoot;
 
@@ -16,7 +18,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
         private static void Open()
         {
             var window = GetWindow<AnimalScaffoldingWindow>(true, "Create Animal");
-            window._rootFolder = SelectedRoot();
+            window.InitializeRootFolder();
             window.Show();
         }
 
@@ -31,7 +33,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
             EditorGUILayout.LabelField("Animal feature", EditorStyles.boldLabel);
             _animalName = EditorGUILayout.TextField("Class name", _animalName.Trim());
             _rootFolder = EditorGUILayout.TextField("Root folder", _rootFolder);
-            EditorGUILayout.HelpBox("Creates Scripts and Content folders plus DTO, Definition, Movement, and Actor boilerplate.", MessageType.Info);
+            EditorGUILayout.HelpBox("Creates species scripts, material, cube prefab, Definition asset, and Addressables entries.", MessageType.Info);
         }
 
         private void DrawCreateButton()
@@ -47,7 +49,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
 
         private bool IsValid()
         {
-            return IdentifierPattern.IsMatch(_animalName) && AssetDatabase.IsValidFolder(_rootFolder);
+            return _identifierPattern.IsMatch(_animalName) && AssetDatabase.IsValidFolder(_rootFolder);
         }
 
         private void CreateFeature()
@@ -56,10 +58,11 @@ namespace ZooWorld.Editor.AnimalScaffolding
             EnsureFeatureDoesNotExist(featureFolder);
             CreateFolders(featureFolder);
             WriteBoilerplate(featureFolder);
+            AnimalScaffoldingContinuation.Schedule(_animalName, featureFolder);
             FinishCreation(featureFolder);
         }
 
-        private static void EnsureFeatureDoesNotExist(string featureFolder)
+        private void EnsureFeatureDoesNotExist(string featureFolder)
         {
             if (AssetDatabase.IsValidFolder(featureFolder))
             {
@@ -67,22 +70,22 @@ namespace ZooWorld.Editor.AnimalScaffolding
             }
         }
 
-        private static void CreateFolders(string featureFolder)
+        private void CreateFolders(string featureFolder)
         {
-            EditorFolderUtility.Ensure(featureFolder + "/Scripts");
-            EditorFolderUtility.Ensure(featureFolder + "/Content");
+            _folderUtility.Ensure(featureFolder + "/Scripts");
+            _folderUtility.Ensure(featureFolder + "/Content");
         }
 
         private void WriteBoilerplate(string featureFolder)
         {
             var scripts = featureFolder + "/Scripts";
-            Write(scripts, _animalName + "ConfigDto.cs", AnimalScaffoldingTemplates.ConfigDto(_animalName));
-            Write(scripts, _animalName + "Definition.cs", AnimalScaffoldingTemplates.Definition(_animalName));
-            Write(scripts, _animalName + "Movement.cs", AnimalScaffoldingTemplates.Movement(_animalName));
-            Write(scripts, _animalName + ".cs", AnimalScaffoldingTemplates.Actor(_animalName));
+            Write(scripts, _animalName + "ConfigDto.cs", _templates.ConfigDto(_animalName));
+            Write(scripts, _animalName + "Definition.cs", _templates.Definition(_animalName));
+            Write(scripts, _animalName + "Movement.cs", _templates.Movement(_animalName));
+            Write(scripts, _animalName + ".cs", _templates.Animal(_animalName));
         }
 
-        private static void Write(string folder, string fileName, string content)
+        private void Write(string folder, string fileName, string content)
         {
             File.WriteAllText(Path.GetFullPath($"{folder}/{fileName}"), content);
         }
@@ -94,7 +97,12 @@ namespace ZooWorld.Editor.AnimalScaffolding
             Close();
         }
 
-        private static string SelectedRoot()
+        private void InitializeRootFolder()
+        {
+            _rootFolder = SelectedRoot();
+        }
+
+        private string SelectedRoot()
         {
             var selectedPath = AssetDatabase.GetAssetPath(Selection.activeObject);
             return AssetDatabase.IsValidFolder(selectedPath) ? selectedPath : DefaultRoot;

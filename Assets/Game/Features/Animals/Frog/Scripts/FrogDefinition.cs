@@ -14,7 +14,7 @@ namespace ZooWorld.Game.Features.Animals.Frog
         {
             return new FrogConfigDto(
                 Id,
-                Diet,
+                FeedingType,
                 SpawnWeight,
                 PrefabAddress,
                 _jumpInterval,

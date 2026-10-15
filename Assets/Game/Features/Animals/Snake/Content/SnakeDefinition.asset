@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SnakeDefinition
   m_EditorClassIdentifier: ZooWorld.Game::ZooWorld.Game.Features.Animals.Snake.SnakeDefinition
   _id: snake
-  _diet: 1
+  _feedingType: 1
   _spawnWeight: 0.75
   _prefabAddress: animals/snake
   _speed: 2.1

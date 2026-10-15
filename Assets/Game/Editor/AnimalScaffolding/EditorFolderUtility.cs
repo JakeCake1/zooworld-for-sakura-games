@@ -2,9 +2,9 @@ using UnityEditor;
 
 namespace ZooWorld.Editor.AnimalScaffolding
 {
-    internal static class EditorFolderUtility
+    internal sealed class EditorFolderUtility
     {
-        public static void Ensure(string path)
+        public void Ensure(string path)
         {
             if (!AssetDatabase.IsValidFolder(path))
             {
@@ -12,7 +12,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
             }
         }
 
-        private static void Create(string path)
+        private void Create(string path)
         {
             var separator = path.LastIndexOf('/');
             var parent = path.Substring(0, separator);

@@ -1,20 +1,21 @@
 using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using ZooWorld.Game.Features.Animals.Frog;
 using ZooWorld.Game.Features.Animals.Snake;
 using ZooWorld.Editor.AnimalScaffolding;
-using FrogActor = ZooWorld.Game.Features.Animals.Frog.Frog;
-using SnakeActor = ZooWorld.Game.Features.Animals.Snake.Snake;
+using FrogAnimal = ZooWorld.Game.Features.Animals.Frog.Frog;
+using SnakeAnimal = ZooWorld.Game.Features.Animals.Snake.Snake;
 
 namespace ZooWorld.Editor.ProjectBuild
 {
-    internal static class AnimalContentBuilder
+    internal sealed class AnimalContentBuilder
     {
-        public static FrogDefinition BuildFrog()
+        private readonly MaterialAssetBuilder _materials = new MaterialAssetBuilder();
+        private readonly AnimalDefinitionAddressables _addressables = new AnimalDefinitionAddressables();
+
+        public FrogDefinition BuildFrog()
         {
-            var material = MaterialAssetBuilder.Create(
+            var material = _materials.Create(
                 ZooWorldProjectPaths.FrogContent + "/Frog.mat",
                 new Color(0.25f, 0.75f, 0.38f));
             var prefab = BuildFrogPrefab(material);
@@ -22,9 +23,9 @@ namespace ZooWorld.Editor.ProjectBuild
             return BuildFrogDefinition();
         }
 
-        public static SnakeDefinition BuildSnake()
+        public SnakeDefinition BuildSnake()
         {
-            var material = MaterialAssetBuilder.Create(
+            var material = _materials.Create(
                 ZooWorldProjectPaths.SnakeContent + "/Snake.mat",
                 new Color(0.82f, 0.26f, 0.20f));
             var prefab = BuildSnakePrefab(material);
@@ -32,25 +33,25 @@ namespace ZooWorld.Editor.ProjectBuild
             return BuildSnakeDefinition();
         }
 
-        private static GameObject BuildFrogPrefab(Material material)
+        private GameObject BuildFrogPrefab(Material material)
         {
             var root = CreateCube("Frog", material, new Vector3(0.8f, 0.5f, 0.8f));
             ConfigureBody(root.AddComponent<Rigidbody>());
-            root.AddComponent<FrogActor>();
+            root.AddComponent<FrogAnimal>();
             return SavePrefab(root, ZooWorldProjectPaths.FrogPrefab);
         }
 
-        private static GameObject BuildSnakePrefab(Material material)
+        private GameObject BuildSnakePrefab(Material material)
         {
             var root = CreateCube("Snake", material, new Vector3(0.96f, 0.6f, 0.96f));
             ConfigureBody(root.AddComponent<Rigidbody>());
-            var actor = root.AddComponent<SnakeActor>();
+            var animal = root.AddComponent<SnakeAnimal>();
             var feedback = ConfigureTastyFeedback(root);
-            AssignFeedback(actor, feedback);
+            AssignFeedback(animal, feedback);
             return SavePrefab(root, ZooWorldProjectPaths.SnakePrefab);
         }
 
-        private static GameObject CreateCube(string name, Material material, Vector3 scale)
+        private GameObject CreateCube(string name, Material material, Vector3 scale)
         {
             var root = GameObject.CreatePrimitive(PrimitiveType.Cube);
             root.name = name;
@@ -59,7 +60,7 @@ namespace ZooWorld.Editor.ProjectBuild
             return root;
         }
 
-        private static void ConfigureBody(Rigidbody body)
+        private void ConfigureBody(Rigidbody body)
         {
             body.useGravity = false;
             body.mass = 1f;
@@ -69,7 +70,7 @@ namespace ZooWorld.Editor.ProjectBuild
             body.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
-        private static TastyFeedback ConfigureTastyFeedback(GameObject root)
+        private TastyFeedback ConfigureTastyFeedback(GameObject root)
         {
             var feedback = root.AddComponent<TastyFeedback>();
             var serialized = new SerializedObject(feedback);
@@ -78,14 +79,14 @@ namespace ZooWorld.Editor.ProjectBuild
             return feedback;
         }
 
-        private static TextMesh CreateTastyLabel(Transform parent)
+        private TextMesh CreateTastyLabel(Transform parent)
         {
             var label = CreateLabelObject(parent).AddComponent<TextMesh>();
             ConfigureLabelText(label);
             return label;
         }
 
-        private static GameObject CreateLabelObject(Transform parent)
+        private GameObject CreateLabelObject(Transform parent)
         {
             var labelObject = new GameObject("TastyLabel");
             labelObject.transform.SetParent(parent, false);
@@ -94,7 +95,7 @@ namespace ZooWorld.Editor.ProjectBuild
             return labelObject;
         }
 
-        private static void ConfigureLabelText(TextMesh label)
+        private void ConfigureLabelText(TextMesh label)
         {
             label.text = "Tasty!";
             label.anchor = TextAnchor.MiddleCenter;
@@ -105,14 +106,14 @@ namespace ZooWorld.Editor.ProjectBuild
             label.color = new Color(1f, 0.85f, 0.18f);
         }
 
-        private static void AssignFeedback(SnakeActor actor, TastyFeedback feedback)
+        private void AssignFeedback(SnakeAnimal animal, TastyFeedback feedback)
         {
-            var serialized = new SerializedObject(actor);
+            var serialized = new SerializedObject(animal);
             serialized.FindProperty("_tastyFeedback").objectReferenceValue = feedback;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static GameObject SavePrefab(GameObject root, string path)
+        private GameObject SavePrefab(GameObject root, string path)
         {
             DeleteExistingAsset(path);
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
@@ -120,7 +121,7 @@ namespace ZooWorld.Editor.ProjectBuild
             return prefab;
         }
 
-        private static void DeleteExistingAsset(string path)
+        private void DeleteExistingAsset(string path)
         {
             if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null)
             {
@@ -128,63 +129,59 @@ namespace ZooWorld.Editor.ProjectBuild
             }
         }
 
-        private static FrogDefinition BuildFrogDefinition()
+        private FrogDefinition BuildFrogDefinition()
         {
             var definition = LoadOrCreate<FrogDefinition>(ZooWorldProjectPaths.FrogDefinition);
             SetCommonFields(definition, "frog", 0, 1.25f, "animals/frog");
             SetFloat(definition, "_jumpInterval", 1.2f);
             SetFloat(definition, "_jumpDistance", 2.1f);
             SetFloat(definition, "_jumpDuration", 0.35f);
-            AnimalDefinitionAddressables.Register(ZooWorldProjectPaths.FrogDefinition);
+            _addressables.Register(ZooWorldProjectPaths.FrogDefinition);
             return definition;
         }
 
-        private static SnakeDefinition BuildSnakeDefinition()
+        private SnakeDefinition BuildSnakeDefinition()
         {
             var definition = LoadOrCreate<SnakeDefinition>(ZooWorldProjectPaths.SnakeDefinition);
             SetCommonFields(definition, "snake", 1, 0.75f, "animals/snake");
             SetFloat(definition, "_speed", 2.1f);
-            AnimalDefinitionAddressables.Register(ZooWorldProjectPaths.SnakeDefinition);
+            _addressables.Register(ZooWorldProjectPaths.SnakeDefinition);
             return definition;
         }
 
-        private static T LoadOrCreate<T>(string path) where T : ScriptableObject
+        private T LoadOrCreate<T>(string path) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             return asset != null ? asset : Create<T>(path);
         }
 
-        private static T Create<T>(string path) where T : ScriptableObject
+        private T Create<T>(string path) where T : ScriptableObject
         {
             var asset = ScriptableObject.CreateInstance<T>();
             AssetDatabase.CreateAsset(asset, path);
             return asset;
         }
 
-        private static void SetCommonFields(Object definition, string id, int diet, float weight, string address)
+        private void SetCommonFields(Object definition, string id, int feedingType, float weight, string address)
         {
             var serialized = new SerializedObject(definition);
             serialized.FindProperty("_id").stringValue = id;
-            serialized.FindProperty("_diet").enumValueIndex = diet;
+            serialized.FindProperty("_feedingType").enumValueIndex = feedingType;
             serialized.FindProperty("_spawnWeight").floatValue = weight;
             serialized.FindProperty("_prefabAddress").stringValue = address;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void SetFloat(Object definition, string field, float value)
+        private void SetFloat(Object definition, string field, float value)
         {
             var serialized = new SerializedObject(definition);
             serialized.FindProperty(field).floatValue = value;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void ConfigureAddress(GameObject prefab, string address)
+        private void ConfigureAddress(GameObject prefab, string address)
         {
-            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
-            var guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(prefab));
-            var entry = settings.CreateOrMoveEntry(guid, settings.DefaultGroup);
-            entry.address = address;
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, entry, true);
+            _addressables.RegisterPrefab(AssetDatabase.GetAssetPath(prefab), address);
         }
     }
 }

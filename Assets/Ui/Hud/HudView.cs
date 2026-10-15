@@ -5,7 +5,7 @@ using ZooWorld.Game.Features.FoodChain;
 
 namespace ZooWorld.Ui.Hud
 {
-    public sealed class HudPresenter : MonoBehaviour
+    public sealed class HudView : MonoBehaviour
     {
         [SerializeField] private Text _preyDeaths;
         [SerializeField] private Text _predatorDeaths;

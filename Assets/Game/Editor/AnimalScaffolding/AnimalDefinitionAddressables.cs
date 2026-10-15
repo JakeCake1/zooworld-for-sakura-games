@@ -6,9 +6,9 @@ using ZooWorld.Services.Configuration;
 
 namespace ZooWorld.Editor.AnimalScaffolding
 {
-    internal static class AnimalDefinitionAddressables
+    internal sealed class AnimalDefinitionAddressables
     {
-        public static void Register(string assetPath)
+        public void Register(string assetPath)
         {
             if (AssetDatabase.LoadAssetAtPath<AnimalDefinition>(assetPath) == null)
             {
@@ -18,21 +18,34 @@ namespace ZooWorld.Editor.AnimalScaffolding
             RegisterDefinition(assetPath);
         }
 
-        private static void RegisterDefinition(string assetPath)
+        public void RegisterPrefab(string assetPath, string address)
+        {
+            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+            var entry = CreateEntry(settings, assetPath);
+            entry.address = address;
+            MarkDirty(settings, entry);
+        }
+
+        private void RegisterDefinition(string assetPath)
         {
             var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
             settings.AddLabel(ScriptableObjectAnimalConfigSource.AddressablesLabel);
             var entry = CreateEntry(settings, assetPath);
             entry.SetLabel(ScriptableObjectAnimalConfigSource.AddressablesLabel, true, true);
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, entry, true);
+            MarkDirty(settings, entry);
         }
 
-        private static AddressableAssetEntry CreateEntry(AddressableAssetSettings settings, string assetPath)
+        private AddressableAssetEntry CreateEntry(AddressableAssetSettings settings, string assetPath)
         {
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
             var entry = settings.CreateOrMoveEntry(guid, settings.DefaultGroup);
             entry.address = $"animal-definitions/{guid}";
             return entry;
+        }
+
+        private void MarkDirty(AddressableAssetSettings settings, AddressableAssetEntry entry)
+        {
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, entry, true);
         }
     }
 }

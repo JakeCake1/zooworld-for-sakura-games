@@ -10,18 +10,18 @@ namespace ZooWorld.Game.Features.Animals.Common.Data
     {
         protected AnimalConfigDto(
             string id,
-            AnimalDiet diet,
+            FeedingType feedingType,
             float spawnWeight,
             string prefabAddress)
         {
             Id = id;
-            Diet = diet;
+            FeedingType = feedingType;
             SpawnWeight = spawnWeight;
             PrefabAddress = prefabAddress;
         }
 
         public string Id { get; }
-        public AnimalDiet Diet { get; }
+        public FeedingType FeedingType { get; }
         public float SpawnWeight { get; }
         public string PrefabAddress { get; }
     }
