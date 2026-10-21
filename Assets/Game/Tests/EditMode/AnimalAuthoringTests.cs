@@ -23,8 +23,16 @@ namespace ZooWorld.Tests.EditMode
         public void GeneratedAnimal_ComposesReusableMovement()
         {
             var source = new AnimalScaffoldingTemplates().Animal("Bear");
-            Assert.That(source, Does.Contain("new LinearMovement(body, config.Speed)"));
+            Assert.That(source, Does.Not.Contain("CreateMovement"));
             Assert.That(source, Does.Not.Contain("BearMovement"));
+        }
+
+        [Test]
+        public void GeneratedDefinition_ReceivesMovementAsComposition()
+        {
+            var source = new AnimalScaffoldingTemplates().Definition("Bear");
+            Assert.That(source, Does.Contain("CreateDto(MovementConfigDto movement)"));
+            Assert.That(source, Does.Not.Contain("_speed"));
         }
 
         [Test]

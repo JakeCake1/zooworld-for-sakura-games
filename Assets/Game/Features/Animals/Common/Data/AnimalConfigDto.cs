@@ -1,4 +1,5 @@
 using System;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 
 namespace ZooWorld.Game.Features.Animals.Common.Data
 {
@@ -12,17 +13,20 @@ namespace ZooWorld.Game.Features.Animals.Common.Data
             string id,
             FeedingType feedingType,
             float spawnWeight,
-            string prefabAddress)
+            string prefabAddress,
+            MovementConfigDto movement)
         {
             Id = id;
             FeedingType = feedingType;
             SpawnWeight = spawnWeight;
             PrefabAddress = prefabAddress;
+            Movement = movement ?? throw new ArgumentNullException(nameof(movement));
         }
 
         public string Id { get; }
         public FeedingType FeedingType { get; }
         public float SpawnWeight { get; }
         public string PrefabAddress { get; }
+        public MovementConfigDto Movement { get; }
     }
 }

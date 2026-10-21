@@ -1,5 +1,6 @@
 using System;
 using ZooWorld.Game.Features.Animals.Common.Data;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 
 namespace ZooWorld.Game.Features.Animals.Snake
 {
@@ -11,12 +12,9 @@ namespace ZooWorld.Game.Features.Animals.Snake
             FeedingType feedingType,
             float spawnWeight,
             string prefabAddress,
-            float speed)
-            : base(id, feedingType, spawnWeight, prefabAddress)
+            MovementConfigDto movement)
+            : base(id, feedingType, spawnWeight, prefabAddress, movement)
         {
-            Speed = speed;
         }
-
-        public float Speed { get; }
     }
 }

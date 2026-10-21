@@ -1,5 +1,6 @@
 using System;
 using ZooWorld.Game.Features.Animals.Common.Data;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 
 namespace ZooWorld.Game.Features.Animals.Frog
 {
@@ -11,18 +12,9 @@ namespace ZooWorld.Game.Features.Animals.Frog
             FeedingType feedingType,
             float spawnWeight,
             string prefabAddress,
-            float jumpInterval,
-            float jumpDistance,
-            float jumpDuration)
-            : base(id, feedingType, spawnWeight, prefabAddress)
+            MovementConfigDto movement)
+            : base(id, feedingType, spawnWeight, prefabAddress, movement)
         {
-            JumpInterval = jumpInterval;
-            JumpDistance = jumpDistance;
-            JumpDuration = jumpDuration;
         }
-
-        public float JumpInterval { get; }
-        public float JumpDistance { get; }
-        public float JumpDuration { get; }
     }
 }

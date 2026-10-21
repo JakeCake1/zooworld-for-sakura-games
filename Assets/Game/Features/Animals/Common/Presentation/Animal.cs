@@ -25,13 +25,14 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
         public void Initialize(
             int spawnSequence,
             AnimalConfigDto definition,
+            IAnimalMovement movement,
             FoodChainService foodChain,
             DeathStatistics statistics,
             Camera camera,
             Action<GameObject> release)
         {
+            _movement = movement ?? throw new ArgumentNullException(nameof(movement));
             StoreCommonDependencies(spawnSequence, definition, foodChain, statistics, release);
-            _movement = CreateMovement(definition, GetComponent<Rigidbody>());
             RenameInstance();
             StartMovement(camera);
         }
@@ -46,8 +47,6 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             MarkDead();
             ReleaseInstance();
         }
-
-        protected abstract IAnimalMovement CreateMovement(AnimalConfigDto definition, Rigidbody body);
 
         private void OnCollisionEnter(Collision collision)
         {

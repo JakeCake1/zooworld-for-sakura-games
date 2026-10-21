@@ -1,5 +1,7 @@
 using UnityEditor;
 using UnityEngine;
+using ZooWorld.Game.Features.Animals.Common.Data;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 using ZooWorld.Game.Features.Animals.Frog;
 using ZooWorld.Game.Features.Animals.Snake;
 using ZooWorld.Editor.AnimalScaffolding;
@@ -131,20 +133,26 @@ namespace ZooWorld.Editor.ProjectBuild
 
         private FrogDefinition BuildFrogDefinition()
         {
+            var movement = LoadOrCreate<JumpMovementDefinition>(
+                ZooWorldProjectPaths.FrogContent + "/JumpMovement.asset");
             var definition = LoadOrCreate<FrogDefinition>(ZooWorldProjectPaths.FrogDefinition);
             SetCommonFields(definition, "frog", 0, 1.25f, "animals/frog");
-            SetFloat(definition, "_jumpInterval", 1.2f);
-            SetFloat(definition, "_jumpDistance", 2.1f);
-            SetFloat(definition, "_jumpDuration", 0.35f);
+            SetFloat(movement, "_interval", 1.2f);
+            SetFloat(movement, "_distance", 2.1f);
+            SetFloat(movement, "_duration", 0.35f);
+            SetMovement(definition, movement);
             _addressables.Register(ZooWorldProjectPaths.FrogDefinition);
             return definition;
         }
 
         private SnakeDefinition BuildSnakeDefinition()
         {
+            var movement = LoadOrCreate<LinearMovementDefinition>(
+                ZooWorldProjectPaths.SnakeContent + "/LinearMovement.asset");
             var definition = LoadOrCreate<SnakeDefinition>(ZooWorldProjectPaths.SnakeDefinition);
             SetCommonFields(definition, "snake", 1, 0.75f, "animals/snake");
-            SetFloat(definition, "_speed", 2.1f);
+            SetFloat(movement, "_speed", 2.1f);
+            SetMovement(definition, movement);
             _addressables.Register(ZooWorldProjectPaths.SnakeDefinition);
             return definition;
         }
@@ -176,6 +184,13 @@ namespace ZooWorld.Editor.ProjectBuild
         {
             var serialized = new SerializedObject(definition);
             serialized.FindProperty(field).floatValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private void SetMovement(AnimalDefinition definition, MovementDefinition movement)
+        {
+            var serialized = new SerializedObject(definition);
+            serialized.FindProperty("_movement").objectReferenceValue = movement;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 

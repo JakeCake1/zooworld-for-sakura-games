@@ -16,4 +16,4 @@ MonoBehaviour:
   _feedingType: 1
   _spawnWeight: 0.75
   _prefabAddress: animals/snake
-  _speed: 2.1
+  _movement: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e8f, type: 2}

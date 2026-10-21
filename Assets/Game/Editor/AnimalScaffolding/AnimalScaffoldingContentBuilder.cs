@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using ZooWorld.Game.Features.Animals.Common.Data;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 using ZooWorld.Game.Features.Animals.Common.Presentation;
 
 namespace ZooWorld.Editor.AnimalScaffolding
@@ -18,7 +19,9 @@ namespace ZooWorld.Editor.AnimalScaffolding
             var paths = new AnimalContentPaths(animalName, featureFolder);
             var material = CreateMaterial(paths.Material);
             CreatePrefab(animalName, paths, material);
+            var movement = CreateMovement(paths.Movement);
             var definition = CreateDefinition(animalName, paths);
+            AssignMovement(definition, movement);
             CompleteCreation(definition);
         }
 
@@ -102,6 +105,20 @@ namespace ZooWorld.Editor.AnimalScaffolding
             return definition;
         }
 
+        private LinearMovementDefinition CreateMovement(string path)
+        {
+            var movement = ScriptableObject.CreateInstance<LinearMovementDefinition>();
+            AssetDatabase.CreateAsset(movement, path);
+            return movement;
+        }
+
+        private void AssignMovement(AnimalDefinition definition, MovementDefinition movement)
+        {
+            var serialized = new SerializedObject(definition);
+            serialized.FindProperty("_movement").objectReferenceValue = movement;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         private void ConfigureDefinition(AnimalDefinition definition, AnimalContentPaths paths)
         {
             var serialized = new SerializedObject(definition);
@@ -130,6 +147,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
                 Material = $"{content}/{animalName}.mat";
                 Prefab = $"{content}/{animalName}.prefab";
                 Definition = $"{content}/{animalName}Definition.asset";
+                Movement = $"{content}/{animalName}Movement.asset";
             }
 
             public string Id { get; }
@@ -137,6 +155,7 @@ namespace ZooWorld.Editor.AnimalScaffolding
             public string Material { get; }
             public string Prefab { get; }
             public string Definition { get; }
+            public string Movement { get; }
         }
     }
 }

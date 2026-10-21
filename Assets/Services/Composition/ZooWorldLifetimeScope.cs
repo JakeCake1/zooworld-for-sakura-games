@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 using ZooWorld.Game.Features.Animals.Common.Data;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 using ZooWorld.Game.Features.FoodChain;
 using ZooWorld.Game.Features.Spawning;
 using ZooWorld.Services.Assets;
@@ -38,7 +40,19 @@ namespace ZooWorld.Services.Composition
             builder.Register<DeathStatistics>(Lifetime.Singleton);
             builder.Register<FoodChainService>(Lifetime.Singleton);
             builder.Register<IAnimalAssetProvider, AddressableAnimalAssetProvider>(Lifetime.Singleton);
+            RegisterMovement(builder);
             builder.Register<AnimalFactory>(Lifetime.Singleton).WithParameter("animalRoot", _animalRoot);
+        }
+
+        private void RegisterMovement(IContainerBuilder builder)
+        {
+            IReadOnlyList<IAnimalMovementBuilder> builders = new IAnimalMovementBuilder[]
+            {
+                new LinearMovementBuilder(),
+                new JumpMovementBuilder()
+            };
+            builder.RegisterInstance(builders);
+            builder.Register<AnimalMovementFactory>(Lifetime.Singleton);
         }
 
         private void RegisterSceneComponents(IContainerBuilder builder)

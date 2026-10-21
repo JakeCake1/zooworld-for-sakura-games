@@ -3,6 +3,7 @@ using NUnit.Framework;
 using ZooWorld.Game.Features.Animals.Common.Data;
 using ZooWorld.Game.Features.Animals.Frog;
 using ZooWorld.Game.Features.Animals.Snake;
+using ZooWorld.Game.Features.Animals.Common.Movement;
 
 namespace ZooWorld.Tests.EditMode
 {
@@ -17,19 +18,21 @@ namespace ZooWorld.Tests.EditMode
         }
 
         [Test]
-        public void FrogDto_OwnsJumpDataOnly()
+        public void SpeciesDto_AcceptsReusableMovementConfig()
         {
-            var frog = new FrogConfigDto("frog", FeedingType.Prey, 1f, "animals/frog", 1f, 2f, 0.3f);
-            Assert.That(frog.JumpDistance, Is.EqualTo(2f));
+            var movement = new LinearMovementConfigDto(2f);
+            var frog = new FrogConfigDto("frog", FeedingType.Prey, 1f, "animals/frog", movement);
+            Assert.That(frog.Movement, Is.SameAs(movement));
             Assert.That(typeof(FrogConfigDto).GetProperty("Speed"), Is.Null);
         }
 
         [Test]
-        public void SnakeDto_OwnsLinearSpeedOnly()
+        public void MovementDtos_KeepStrategySpecificDataSeparate()
         {
-            var snake = new SnakeConfigDto("snake", FeedingType.Predator, 1f, "animals/snake", 2f);
-            Assert.That(snake.Speed, Is.EqualTo(2f));
-            Assert.That(typeof(SnakeConfigDto).GetProperty("JumpInterval"), Is.Null);
+            var linear = new LinearMovementConfigDto(2f);
+            var jump = new JumpMovementConfigDto(1f, 2f, 0.3f);
+            Assert.That(linear.Speed, Is.EqualTo(2f));
+            Assert.That(jump.Distance, Is.EqualTo(2f));
         }
     }
 }

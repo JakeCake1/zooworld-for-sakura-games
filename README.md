@@ -16,7 +16,7 @@ Use the Create Asset workflow:
 2. Choose `Create > Zoo World > Animal...`.
 3. Enter a valid C# class name and click **Create Animal Feature**.
 4. Wait for Unity to compile the generated scripts. The created Definition asset is selected when authoring finishes.
-5. Configure its feeding type, spawn weight, and linear speed in the Inspector.
+5. Configure its feeding type, spawn weight, and generated movement asset in the Inspector.
 
 The editor creates the full species set:
 
@@ -26,8 +26,9 @@ The editor creates the full species set:
 - `<Animal>/Content/<Animal>.mat`
 - `<Animal>/Content/<Animal>.prefab`
 - `<Animal>/Content/<Animal>Definition.asset`
+- `<Animal>/Content/<Animal>Movement.asset`
 
-The generated animal composes the reusable `LinearMovement` strategy by default. To use jumping, add jump parameters to its DTO and Definition, then compose `JumpMovement` inside `<Animal>.CreateMovement`. A species-specific movement class is only needed for genuinely unique behavior.
+The generated Definition references a reusable `LinearMovementDefinition` by default. To make the same species jump, create `Zoo World > Movement > Jump` and assign that asset to the Definition. The species class and DTO do not change. A new movement algorithm only needs its own config DTO, Definition, movement implementation, builder, and registration in `ZooWorldLifetimeScope`.
 
 The prefab is a configured cube using the same base proportions as Frog. No switch in `Animal` needs to be changed.
 
@@ -57,15 +58,15 @@ Assets/
 └── Services/{Assets,Configuration,Composition}
 ```
 
-- `Animal` contains only common lifecycle, collision, camera-boundary, and death behavior.
+- `Animal` contains only common lifecycle, collision, camera-boundary, pooling, and death behavior.
 - `AnimalMovementRunner` owns the fixed-step UniTask loop; animal MonoBehaviours have no `Update` or `FixedUpdate` movement loop.
-- `Frog`/`Snake`, their DTOs, definitions, and content live in their species folders; each species composes a reusable movement strategy.
+- `Frog`/`Snake`, their DTOs, definitions, and content live in their species folders; movement is supplied independently by the factory.
 - `LinearMovement` and `JumpMovement` are species-agnostic and live in `Animals/Common/Movement`.
-- The common `AnimalConfigDto` contains only `Id`, `FeedingType`, `SpawnWeight`, and `PrefabAddress`. Jump data exists only in `FrogConfigDto`; linear speed exists only in `SnakeConfigDto`.
+- The common `AnimalConfigDto` contains species-neutral data plus a `MovementConfigDto`. Jump and linear settings live in separate movement DTOs and ScriptableObject authoring assets.
 - `FoodChainRules` is a pure domain rule set. It contains no Unity API and is covered by EditMode tests.
 - `FoodChainService` resolves each physics pair once per frame and applies the domain result.
 - `ZooWorldLifetimeScope` is the VContainer composition root.
-- `IAnimalAssetProvider` isolates Addressables from the factory and owns instance release.
+- `IAnimalAssetProvider` isolates Addressables and owns final instance release; `AnimalPool` handles ordinary reuse and resets lifecycle, movement, and physics state.
 - `DeathStatistics` is observable state consumed by `HudView`.
 - DOTween drives frog jumps and the `Tasty!` feedback.
 
@@ -82,7 +83,7 @@ Species `AnimalDefinition` assets are not gameplay models. They are authoring fo
 To move the data to JSON, a remote config, or a database:
 
 1. Implement `IAnimalConfigSource`.
-2. Deserialize/map the external representation into `FrogConfigDto`, `SnakeConfigDto`, or another species DTO.
+2. Deserialize/map the external representation into a species DTO containing the appropriate `MovementConfigDto`.
 3. Replace the source registration in `ZooWorldLifetimeScope`.
 
 No movement, spawning, food-chain, Addressables, or UI code needs to change. `AnimalCatalogTests` demonstrates this boundary with a non-ScriptableObject source.
