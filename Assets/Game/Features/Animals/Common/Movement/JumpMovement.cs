@@ -80,13 +80,13 @@ namespace ZooWorld.Game.Features.Animals.Common.Movement
         private void PrepareNextJump()
         {
             _direction = RandomDirection();
-            _timeUntilJump = _interval + _duration;
+            _timeUntilJump = _interval;
         }
 
         private void ApplyRedirect(Vector3 direction)
         {
             _direction = direction;
-            _timeUntilJump = _interval + _duration;
+            _timeUntilJump = _interval;
             KillJump();
             StartJump();
         }
