@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ZooWorld.Game.Features.Animals.Common.Data;
 using ZooWorld.Game.Features.Animals.Common.Movement;
@@ -11,7 +13,7 @@ namespace ZooWorld.Game.Features.Spawning
     {
         private readonly FoodChainService _foodChain;
         private readonly DeathStatistics _statistics;
-        private readonly IAnimalAssetProvider _assetProvider;
+        private readonly AnimalPool _pool;
         private readonly AnimalMovementFactory _movementFactory;
         private readonly Transform _animalRoot;
         private readonly Camera _camera;
@@ -20,25 +22,44 @@ namespace ZooWorld.Game.Features.Spawning
         public AnimalFactory(
             FoodChainService foodChain,
             DeathStatistics statistics,
-            IAnimalAssetProvider assetProvider,
+            AnimalPool pool,
             AnimalMovementFactory movementFactory,
             Transform animalRoot)
         {
             _foodChain = foodChain;
             _statistics = statistics;
-            _assetProvider = assetProvider;
+            _pool = pool;
             _movementFactory = movementFactory;
             _animalRoot = animalRoot;
             _camera = Camera.main;
         }
 
-        public void Create(AnimalConfigDto definition, Vector3 position)
+        public async UniTask CreateAsync(
+            AnimalConfigDto definition,
+            Vector3 position,
+            CancellationToken cancellationToken)
         {
-            _assetProvider.InstantiateAsync(
-                definition.PrefabAddress,
-                position,
-                _animalRoot,
-                instance => InitializeInstance(instance, definition));
+            GameObject instance = null;
+            try
+            {
+                instance = await _pool.RentAsync(
+                    definition.PrefabAddress,
+                    position,
+                    _animalRoot,
+                    cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                InitializeInstance(instance, definition);
+            }
+            catch (OperationCanceledException)
+            {
+                Discard(instance);
+                throw;
+            }
+            catch (Exception exception)
+            {
+                Discard(instance);
+                Debug.LogException(exception);
+            }
         }
 
         private void InitializeInstance(GameObject instance, AnimalConfigDto definition)
@@ -50,13 +71,9 @@ namespace ZooWorld.Game.Features.Spawning
 
         private Animal RequireAnimal(GameObject instance, string address)
         {
-            if (instance.TryGetComponent<Animal>(out var animal))
-            {
-                return animal;
-            }
-
-            _assetProvider.Release(instance);
-            throw new InvalidOperationException($"Addressable '{address}' has no Animal component.");
+            return instance.TryGetComponent<Animal>(out var animal)
+                ? animal
+                : throw new InvalidOperationException($"Addressable '{address}' has no Animal component.");
         }
 
         private IAnimalMovement CreateMovement(GameObject instance, AnimalConfigDto definition)
@@ -76,7 +93,12 @@ namespace ZooWorld.Game.Features.Spawning
                 _foodChain,
                 _statistics,
                 _camera,
-                _assetProvider.Release);
+                _pool.Return);
+        }
+
+        private void Discard(GameObject instance)
+        {
+            _pool.Discard(instance);
         }
     }
 }

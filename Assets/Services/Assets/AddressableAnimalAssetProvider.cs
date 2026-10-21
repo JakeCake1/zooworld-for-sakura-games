@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -8,14 +10,15 @@ namespace ZooWorld.Services.Assets
 {
     public sealed class AddressableAnimalAssetProvider : IAnimalAssetProvider
     {
-        public void InstantiateAsync(
+        public UniTask<GameObject> InstantiateAsync(
             string address,
             Vector3 position,
             Transform parent,
-            Action<GameObject> onLoaded)
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var operation = Addressables.InstantiateAsync(address, position, Quaternion.identity, parent);
-            operation.Completed += handle => CompleteInstantiation(handle, address, onLoaded);
+            return new PendingInstantiation(operation, address, cancellationToken).Task;
         }
 
         public void Release(GameObject instance)
@@ -26,24 +29,66 @@ namespace ZooWorld.Services.Assets
             }
         }
 
-        private void CompleteInstantiation(
-            AsyncOperationHandle<GameObject> handle,
-            string address,
-            Action<GameObject> onLoaded)
+        private sealed class PendingInstantiation
         {
-            if (handle.Status == AsyncOperationStatus.Succeeded)
+            private readonly UniTaskCompletionSource<GameObject> _completion =
+                new UniTaskCompletionSource<GameObject>();
+            private readonly string _address;
+            private readonly CancellationToken _cancellationToken;
+            private CancellationTokenRegistration _registration;
+
+            public PendingInstantiation(
+                AsyncOperationHandle<GameObject> operation,
+                string address,
+                CancellationToken cancellationToken)
             {
-                onLoaded?.Invoke(handle.Result);
-                return;
+                _address = address;
+                _cancellationToken = cancellationToken;
+                operation.Completed += Complete;
+                _registration = cancellationToken.Register(Cancel);
             }
 
-            ReportFailure(handle, address);
-        }
+            public UniTask<GameObject> Task => _completion.Task;
 
-        private void ReportFailure(AsyncOperationHandle<GameObject> handle, string address)
-        {
-            Debug.LogError($"Failed to load addressable animal prefab '{address}'.");
-            Addressables.Release(handle);
+            private void Cancel()
+            {
+                _completion.TrySetCanceled(_cancellationToken);
+            }
+
+            private void Complete(AsyncOperationHandle<GameObject> handle)
+            {
+                _registration.Dispose();
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    CompleteSuccess(handle.Result);
+                    return;
+                }
+
+                CompleteFailure(handle);
+            }
+
+            private void CompleteSuccess(GameObject instance)
+            {
+                if (_cancellationToken.IsCancellationRequested || !_completion.TrySetResult(instance))
+                {
+                    Addressables.ReleaseInstance(instance);
+                }
+            }
+
+            private void CompleteFailure(AsyncOperationHandle<GameObject> handle)
+            {
+                ReleaseHandle(handle);
+                _completion.TrySetException(
+                    new InvalidOperationException($"Failed to load addressable animal prefab '{_address}'."));
+            }
+
+            private void ReleaseHandle(AsyncOperationHandle<GameObject> handle)
+            {
+                if (handle.IsValid())
+                {
+                    Addressables.Release(handle);
+                }
+            }
         }
     }
 }

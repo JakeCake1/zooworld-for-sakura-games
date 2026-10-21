@@ -31,7 +31,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             Camera camera,
             Action<GameObject> release)
         {
-            _movement = movement ?? throw new ArgumentNullException(nameof(movement));
+            ResetRuntimeState(movement);
             StoreCommonDependencies(spawnSequence, definition, foodChain, statistics, release);
             RenameInstance();
             StartMovement(camera);
@@ -46,6 +46,13 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
 
             MarkDead();
             ReleaseInstance();
+        }
+
+        public void PrepareForPool()
+        {
+            CancelMovement();
+            StopMovement();
+            ResetPhysics();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -70,6 +77,13 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             _release = release;
         }
 
+        private void ResetRuntimeState(IAnimalMovement movement)
+        {
+            PrepareForPool();
+            _movement = movement ?? throw new ArgumentNullException(nameof(movement));
+            IsDead = false;
+        }
+
         private void RenameInstance()
         {
             name = $"{_definition.Id} #{SpawnSequence}";
@@ -84,7 +98,7 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
         {
             IsDead = true;
             CancelMovement();
-            _movement.Stop();
+            StopMovement();
             _statistics.Record(FeedingType);
         }
 
@@ -107,9 +121,23 @@ namespace ZooWorld.Game.Features.Animals.Common.Presentation
             _movementCancellation = null;
         }
 
+        private void StopMovement()
+        {
+            _movement?.Stop();
+            _movement = null;
+        }
+
+        private void ResetPhysics()
+        {
+            var body = GetComponent<Rigidbody>();
+            body.linearVelocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+        }
+
         private void OnDestroy()
         {
             CancelMovement();
+            StopMovement();
         }
     }
 }

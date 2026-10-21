@@ -14,6 +14,11 @@ namespace ZooWorld.Game.Features.Animals.Snake
             SetLabelActive(false);
         }
 
+        private void OnEnable()
+        {
+            SetLabelActive(false);
+        }
+
         public void Show()
         {
             if (_label == null)

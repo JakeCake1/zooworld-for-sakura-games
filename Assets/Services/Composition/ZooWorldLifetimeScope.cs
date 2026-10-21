@@ -40,8 +40,10 @@ namespace ZooWorld.Services.Composition
             builder.Register<DeathStatistics>(Lifetime.Singleton);
             builder.Register<FoodChainService>(Lifetime.Singleton);
             builder.Register<IAnimalAssetProvider, AddressableAnimalAssetProvider>(Lifetime.Singleton);
+            builder.Register<AnimalPool>(Lifetime.Singleton);
             RegisterMovement(builder);
-            builder.Register<AnimalFactory>(Lifetime.Singleton).WithParameter("animalRoot", _animalRoot);
+            builder.RegisterInstance(_animalRoot);
+            builder.Register<AnimalFactory>(Lifetime.Singleton);
         }
 
         private void RegisterMovement(IContainerBuilder builder)

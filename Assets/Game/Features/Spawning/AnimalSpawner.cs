@@ -33,7 +33,7 @@ namespace ZooWorld.Game.Features.Spawning
             while (!cancellationToken.IsCancellationRequested)
             {
                 await WaitForNextSpawn(cancellationToken);
-                SpawnAnimal();
+                await SpawnAnimalAsync(cancellationToken);
             }
         }
 
@@ -43,9 +43,9 @@ namespace ZooWorld.Game.Features.Spawning
             return UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: cancellationToken);
         }
 
-        private void SpawnAnimal()
+        private UniTask SpawnAnimalAsync(CancellationToken cancellationToken)
         {
-            _factory.Create(_catalog.GetRandom(), RandomPosition());
+            return _factory.CreateAsync(_catalog.GetRandom(), RandomPosition(), cancellationToken);
         }
 
         private Vector3 RandomPosition()
