@@ -2,9 +2,12 @@
   "name": "ZooWorld.Game",
   "rootNamespace": "ZooWorld.Game",
   "references": [
-    "DOTween",
     "UniTask",
     "VContainer"
+  ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "DOTween.dll"
   ],
   "autoReferenced": true
 }

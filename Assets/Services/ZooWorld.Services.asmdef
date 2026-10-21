@@ -6,7 +6,6 @@
     "ZooWorld.Ui",
     "UniTask",
     "VContainer",
-    "VContainer.Unity",
     "Unity.Addressables",
     "Unity.ResourceManager"
   ],

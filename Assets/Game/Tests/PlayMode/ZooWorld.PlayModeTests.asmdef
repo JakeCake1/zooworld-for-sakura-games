@@ -5,8 +5,7 @@
     "ZooWorld.Game",
     "ZooWorld.Services",
     "UniTask",
-    "VContainer",
-    "VContainer.Unity"
+    "VContainer"
   ],
   "optionalUnityReferences": ["TestAssemblies"],
   "autoReferenced": false

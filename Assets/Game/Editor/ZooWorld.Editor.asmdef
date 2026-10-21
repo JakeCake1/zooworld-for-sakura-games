@@ -8,8 +8,7 @@
     "Unity.ugui",
     "Unity.Addressables",
     "Unity.Addressables.Editor",
-    "VContainer",
-    "VContainer.Unity"
+    "VContainer"
   ],
   "includePlatforms": ["Editor"],
   "autoReferenced": true
