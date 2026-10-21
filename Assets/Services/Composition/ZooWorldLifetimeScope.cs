@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
@@ -15,14 +16,17 @@ namespace ZooWorld.Services.Composition
     public sealed class ZooWorldLifetimeScope : LifetimeScope
     {
         [SerializeField] private Transform _animalRoot;
+        [SerializeField] private Camera _worldCamera;
 
-        public void SetSceneReferences(Transform animalRoot)
+        public void SetSceneReferences(Transform animalRoot, Camera worldCamera)
         {
             _animalRoot = animalRoot;
+            _worldCamera = worldCamera;
         }
 
         protected override void Configure(IContainerBuilder builder)
         {
+            ValidateSceneReferences();
             RegisterConfiguration(builder);
             RegisterGameServices(builder);
             RegisterSceneComponents(builder);
@@ -43,6 +47,7 @@ namespace ZooWorld.Services.Composition
             builder.Register<AnimalPool>(Lifetime.Singleton);
             RegisterMovement(builder);
             builder.RegisterInstance(_animalRoot);
+            builder.RegisterInstance(_worldCamera);
             builder.Register<AnimalFactory>(Lifetime.Singleton);
         }
 
@@ -55,6 +60,14 @@ namespace ZooWorld.Services.Composition
             };
             builder.RegisterInstance(builders);
             builder.Register<AnimalMovementFactory>(Lifetime.Singleton);
+        }
+
+        private void ValidateSceneReferences()
+        {
+            if (_animalRoot == null || _worldCamera == null)
+            {
+                throw new InvalidOperationException("Animal root and world camera must be assigned.");
+            }
         }
 
         private void RegisterSceneComponents(IContainerBuilder builder)

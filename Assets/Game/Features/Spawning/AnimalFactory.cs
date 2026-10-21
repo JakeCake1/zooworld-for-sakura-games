@@ -24,14 +24,15 @@ namespace ZooWorld.Game.Features.Spawning
             DeathStatistics statistics,
             AnimalPool pool,
             AnimalMovementFactory movementFactory,
-            Transform animalRoot)
+            Transform animalRoot,
+            Camera camera)
         {
             _foodChain = foodChain;
             _statistics = statistics;
             _pool = pool;
             _movementFactory = movementFactory;
             _animalRoot = animalRoot;
-            _camera = Camera.main;
+            _camera = camera;
         }
 
         public async UniTask CreateAsync(

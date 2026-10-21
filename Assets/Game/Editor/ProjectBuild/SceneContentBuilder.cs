@@ -18,11 +18,11 @@ namespace ZooWorld.Editor.ProjectBuild
         public void Build(Material groundMaterial)
         {
             var scene = CreateEmptyScene();
-            CreateWorld(groundMaterial);
+            var worldCamera = CreateWorld(groundMaterial);
             var animalRoot = new GameObject("Animals").transform;
             CreateSpawner();
             CreateHud();
-            CreateCompositionRoot(animalRoot);
+            CreateCompositionRoot(animalRoot, worldCamera);
             EditorSceneManager.SaveScene(scene, ZooWorldProjectPaths.MainScene);
         }
 
@@ -31,19 +31,22 @@ namespace ZooWorld.Editor.ProjectBuild
             return EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         }
 
-        private void CreateWorld(Material groundMaterial)
+        private Camera CreateWorld(Material groundMaterial)
         {
-            CreateCamera();
+            var worldCamera = CreateCamera();
             CreateLight();
             CreateGround(groundMaterial);
+            return worldCamera;
         }
 
-        private void CreateCamera()
+        private Camera CreateCamera()
         {
             var cameraObject = new GameObject("Main Camera");
             ConfigureCameraTransform(cameraObject.transform);
-            ConfigureCamera(cameraObject.AddComponent<Camera>());
+            var worldCamera = cameraObject.AddComponent<Camera>();
+            ConfigureCamera(worldCamera);
             cameraObject.tag = "MainCamera";
+            return worldCamera;
         }
 
         private void ConfigureCameraTransform(Transform cameraTransform)
@@ -97,11 +100,11 @@ namespace ZooWorld.Editor.ProjectBuild
             new GameObject("AnimalSpawner").AddComponent<AnimalSpawner>();
         }
 
-        private void CreateCompositionRoot(Transform animalRoot)
+        private void CreateCompositionRoot(Transform animalRoot, Camera worldCamera)
         {
             var scopeObject = new GameObject("ZooWorldLifetimeScope");
             var scope = scopeObject.AddComponent<ZooWorldLifetimeScope>();
-            scope.SetSceneReferences(animalRoot);
+            scope.SetSceneReferences(animalRoot, worldCamera);
             EditorUtility.SetDirty(scope);
             Selection.activeGameObject = scopeObject;
         }

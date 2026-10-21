@@ -509,6 +509,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects: []
   _animalRoot: {fileID: 2041611709}
+  _worldCamera: {fileID: 532349421}
 --- !u!4 &1447848315
 Transform:
   m_ObjectHideFlags: 0
